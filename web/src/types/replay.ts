@@ -38,6 +38,7 @@ export interface Belief {
   updated_at_step: number;
   superseded_by: string | null;
   provenance: Provenance[];
+  metadata: Record<string, unknown>;
 }
 
 export interface BeliefEdge {
@@ -56,6 +57,26 @@ export interface TimelineEvent {
   belief_id?: string | null;
   target_belief_id?: string | null;
   summary: string;
+  /** CONSOLIDATE events carry `previous`: the ConsolidatePrevious values the event overwrote. */
+  details: Record<string, unknown>;
+  created_at_utc: string;
+}
+
+/** Belief content a CONSOLIDATE overwrote; mirrors CONSOLIDATE_PREVIOUS_FIELDS in audit/domain/timeline.py. */
+export type ConsolidatePrevious = Pick<
+  Belief,
+  "claim" | "closed_set_items" | "confidence" | "evidence_count" | "provenance"
+>;
+
+export interface MemoryStats {
+  total_ingested_sources: number;
+  active_beliefs: number;
+  superseded_beliefs: number;
+  refuted_beliefs: number;
+  forgotten_beliefs: number;
+  raw_chunks: number;
+  estimated_active_tokens: number;
+  revision_counts: Record<string, number>;
 }
 
 export interface ReplayQuestionComparison {
@@ -82,5 +103,6 @@ export interface ReplayBundle {
   beliefs: Belief[];
   edges: BeliefEdge[];
   events: TimelineEvent[];
+  stats: MemoryStats;
   comparisons: ReplayQuestionComparison[];
 }

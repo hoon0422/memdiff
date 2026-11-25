@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field
 
 from memdiff.memory.domain.revision import RevisionOp
 
+# Belief fields CONSOLIDATE rewrites; the event keeps their pre-consolidate values so time travel can rewind them.
+CONSOLIDATE_PREVIOUS_FIELDS = {"claim", "closed_set_items", "confidence", "evidence_count", "provenance"}
+
 
 class BeliefEdge(BaseModel):
     """Directed relationship between two beliefs in the revision graph."""

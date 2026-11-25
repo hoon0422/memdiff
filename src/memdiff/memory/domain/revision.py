@@ -6,7 +6,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel
 
-from .belief import BeliefType
+from .belief import Belief, BeliefType
 
 
 class RevisionOp(StrEnum):
@@ -53,6 +53,7 @@ class BeliefConsolidated(RevisionEvent):
     belief_id: str
     surface: str
     evidence_count: int
+    previous: Belief
 
 
 class BeliefRefuted(RevisionEvent):

@@ -1,17 +1,27 @@
 import { useMemo, useState } from "react";
 import { SAMPLE_REPLAY } from "./data/sampleReplay";
-import type { Belief, BeliefStatus, ReplayBundle } from "./types/replay";
+import type { Belief, BeliefStatus, ConsolidatePrevious, ReplayBundle } from "./types/replay";
 
-function computeStatusAtStep(bundle: ReplayBundle, belief: Belief, step: number): BeliefStatus | null {
+/** Same rule as reconstruct_state_at_step() in audit/domain/time_travel.py. */
+function computeBeliefAtStep(bundle: ReplayBundle, belief: Belief, step: number): Belief | null {
   if (belief.created_at_step > step) return null;
   let status: BeliefStatus = "active";
+  let superseded_by: string | null = null;
+  let content: Partial<ConsolidatePrevious> | undefined;
   for (const ev of bundle.events) {
-    if (ev.step > step) break;
-    if (ev.op === "SUPERSEDE" && ev.target_belief_id === belief.id) status = "superseded";
-    if (ev.op === "REFUTE" && ev.target_belief_id === belief.id) status = "refuted";
-    if (ev.op === "FORGET" && ev.target_belief_id === belief.id) status = "forgotten";
+    // The first CONSOLIDATE after `step` holds the content as it was at `step`.
+    if (ev.op === "CONSOLIDATE" && ev.step > step && ev.belief_id === belief.id && !content) {
+      content = ev.details.previous as ConsolidatePrevious | undefined;
+    }
+    if (ev.step > step || ev.target_belief_id !== belief.id) continue;
+    if (ev.op === "SUPERSEDE") {
+      status = "superseded";
+      superseded_by = ev.belief_id ?? null;
+    }
+    if (ev.op === "REFUTE") status = "refuted";
+    if (ev.op === "FORGET") status = "forgotten";
   }
-  return status;
+  return { ...belief, ...content, status, superseded_by };
 }
 
 export function App() {
@@ -31,8 +41,8 @@ export function App() {
 
   const visibleBeliefs = useMemo(() => {
     return bundle.beliefs
-      .map((b) => ({ belief: b, statusAtStep: computeStatusAtStep(bundle, b, step) }))
-      .filter((item): item is { belief: Belief; statusAtStep: BeliefStatus } => item.statusAtStep !== null);
+      .map((b) => computeBeliefAtStep(bundle, b, step))
+      .filter((b): b is Belief => b !== null);
   }, [bundle, step]);
 
   const stepEvents = useMemo(
@@ -85,7 +95,8 @@ export function App() {
       <section style={{ marginBottom: 24 }}>
         <h2 style={{ fontSize: 18, marginBottom: 10 }}>Belief Ledger Snapshot ({visibleBeliefs.length})</h2>
         <div style={{ display: "grid", gap: 10 }}>
-          {visibleBeliefs.map(({ belief, statusAtStep }) => {
+          {visibleBeliefs.map((belief) => {
+            const statusAtStep = belief.status;
             const isStruck = statusAtStep === "superseded" || statusAtStep === "refuted";
             const isFaded = statusAtStep === "forgotten" || isStruck;
             return (
@@ -110,6 +121,10 @@ export function App() {
                 </div>
                 <div style={{ textDecoration: isStruck ? "line-through" : "none", fontSize: 14 }}>
                   {belief.claim}
+                </div>
+                <div style={{ marginTop: 4, fontSize: 12, color: "#4b5563" }}>
+                  Evidence {belief.evidence_count} · confidence {belief.confidence.toFixed(2)} · sources:{" "}
+                  {belief.provenance.map((p) => p.source_id).join(", ")}
                 </div>
                 {belief.closed_set_items.length > 0 && (
                   <div style={{ marginTop: 4, fontSize: 12, color: "#4b5563" }}>

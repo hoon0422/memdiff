@@ -189,3 +189,39 @@ def test_recorder_emits_added_summary() -> None:
     )
     (e,) = log.list_events()
     assert e.summary == f"Added [gotcha] on ui: {'c' * 100}" and e.id == 1
+
+
+def test_time_travel_restores_claim_and_provenance_across_consolidates() -> None:
+    script = {
+        "s001": [_cand(BeliefType.GOTCHA, "ui", "use dropdown", closed_set_items=["a"])],
+        "s002": [_cand(BeliefType.GOTCHA, "ui", "x", closed_set_items=["b"],
+                       provenance=[Provenance(source_id="s002", outcome="success")])],
+        "s003": [_cand(BeliefType.GOTCHA, "ui", "y", provenance=[Provenance(source_id="s003")])],
+    }
+    merged = {"s002": "use funnel icon", "s003": "use funnel icon (confirmed)"}
+    current = {"tid": "s001"}
+
+    def decide(cand, neighbors):  # type: ignore[no-untyped-def]
+        if current["tid"] == "s001" or not neighbors:
+            return RevisionDecision(op=RevisionOp.ADD)
+        return RevisionDecision(
+            op=RevisionOp.CONSOLIDATE, target_belief_id=neighbors[0][0].id, merged_claim=merged[current["tid"]]
+        )
+
+    rig = _Rig(script, decide)
+    for tid in script:
+        current["tid"] = tid
+        rig.insert(tid)
+
+    def at(step: int) -> Belief:
+        (b,) = rig.replay.state_at_step(step)
+        return b
+
+    sources = lambda b: [p.source_id for p in b.provenance]  # noqa: E731
+    assert (at(1).claim, sources(at(1)), at(1).closed_set_items) == ("use dropdown", ["x"], ["a"])
+    assert (at(1).evidence_count, at(1).confidence) == (1, 0.8)
+    assert (at(2).claim, sources(at(2)), at(2).closed_set_items) == ("use funnel icon", ["x", "s002"], ["a", "b"])
+    assert (at(2).evidence_count, at(2).confidence) == (2, pytest.approx(0.85))
+    assert (at(3).claim, sources(at(3))) == ("use funnel icon (confirmed)", ["x", "s002", "s003"])
+    assert at(3) == rig.beliefs.list_beliefs()[0]  # latest step matches the live row
+    assert len(rig.beliefs.list_beliefs()) == 1  # ledger rows are never deleted
