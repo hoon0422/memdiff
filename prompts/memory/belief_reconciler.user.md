@@ -1,0 +1,5 @@
+NEW CANDIDATE BELIEF:
+$candidate
+
+EXISTING ACTIVE BELIEFS:
+$neighbors

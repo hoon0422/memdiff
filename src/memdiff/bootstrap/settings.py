@@ -29,6 +29,8 @@ class Settings(BaseSettings):
 
     memdiff_data_dir: Path = Path("data/longmemeval-v2")
     memdiff_cache_dir: Path = Path(".cache/llm")
+    # <repo>/prompts, independent of the working directory
+    memdiff_prompts_dir: Path = Path(__file__).resolve().parents[3] / "prompts"
 
     @property
     def effective_base_url(self) -> str | None:
