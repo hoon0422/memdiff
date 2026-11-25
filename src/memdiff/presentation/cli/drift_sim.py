@@ -40,13 +40,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(
-    argv: Sequence[str] | None = None,
-    *,
-    settings: Settings | None = None,
-    overrides: Sequence[Provider] = (),
-) -> None:
-    """`settings` and `overrides` are test seams; the real CLI uses `.env` and no overrides."""
+def main(argv: Sequence[str] | None = None) -> None:
+    run(argv, settings=get_settings())
+
+
+def run(argv: Sequence[str] | None, *, settings: Settings, overrides: Sequence[Provider] = ()) -> None:
+    """`main()` minus the `.env` lookup; tests pass their own settings and override providers."""
     args = build_parser().parse_args(argv)
     run_id = args.run_id or f"drift_sim_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
     config = DriftSimConfig(
@@ -57,9 +56,7 @@ def main(
         noise_events_per_session=args.noise_per_session,
         num_durable_rules=args.durable_rules,
     )
-    container = build_container(
-        settings or get_settings(), DriftSimProvider(args.runs_dir), *overrides
-    )
+    container = build_container(settings, DriftSimProvider(args.runs_dir), *overrides)
     try:
         summary = container.get(DriftBenchmarkRunner).run(
             config=config,

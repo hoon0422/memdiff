@@ -8,17 +8,38 @@ from pathlib import Path
 
 import pytest
 
+from fake_sdk import FakeSDKProvider, RecordingFakeSDK, fake_settings
+
 DEMO = runpy.run_path(str(Path(__file__).parents[1] / "scripts" / "demo_memory.py"))
 GOLDEN = Path(__file__).parent / "golden" / "demo"
 
 
 def test_offline_demo_supersedes_stale_values_and_answers_from_current(tmp_path: Path) -> None:
-    result = DEMO["run_demo"](out_dir=tmp_path, sessions=5, top_k=3)
+    result = DEMO["run_demo"](
+        settings=fake_settings(tmp_path), out_dir=tmp_path, sessions=5, top_k=3
+    )
     assert result["hits"] == result["queries"]
     assert result["SUPERSEDE"] > 0
     assert result["IGNORE"] > 0
     assert (tmp_path / "demo.sqlite").exists()
     assert (tmp_path / "replay_demo.json").exists()
+
+
+def test_live_demo_runs_offline_against_the_fake_sdk(tmp_path: Path) -> None:
+    sdk = RecordingFakeSDK()
+    result = DEMO["run_demo"](
+        settings=fake_settings(tmp_path),
+        out_dir=tmp_path / "live",
+        sessions=5,
+        top_k=3,
+        live=True,
+        providers=[FakeSDKProvider(sdk)],
+    )
+    roles = {r.get("role") for r in sdk.requests if r["kind"] == "chat"}
+    assert {"extractor", "reconciler"} <= roles  # the LLM path, not the rule-based offline stubs
+    assert any(r["kind"] == "embedding" for r in sdk.requests)
+    assert result["SUPERSEDE"] > 0
+    assert (tmp_path / "live" / "replay_demo.json").exists()
 
 
 def test_offline_demo_output_and_replay_match_the_pre_refactor_demo(
@@ -39,7 +60,7 @@ def test_offline_demo_output_and_replay_match_the_pre_refactor_demo(
     monkeypatch.setattr("memdiff.audit.domain.timeline.datetime", Clock)
 
     out = tmp_path / "demo"
-    DEMO["run_demo"](out_dir=out, sessions=5, top_k=3)
+    DEMO["run_demo"](settings=fake_settings(tmp_path), out_dir=out, sessions=5, top_k=3)
 
     stdout = capsys.readouterr().out.replace(str(out), "<OUT>")
     assert stdout == (GOLDEN / "stdout.txt").read_text(encoding="utf-8")

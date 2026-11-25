@@ -196,7 +196,7 @@ def test_without_resume_an_existing_run_is_rebuilt_from_scratch(tmp_path: Path) 
 def test_cli_runs_through_the_container_and_prints_the_summary(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    from memdiff.presentation.cli.drift_sim import main
+    from memdiff.presentation.cli.drift_sim import run
 
     sdk = RecordingFakeSDK()
     settings = drift_settings(tmp_path)
@@ -208,7 +208,7 @@ def test_cli_runs_through_the_container_and_prints_the_summary(
         def sdk_client(self) -> OpenAI:
             return sdk  # type: ignore[return-value]
 
-    main(
+    run(
         ["--run-id", "cli", "--runs-dir", str(tmp_path / "out"), "--sessions", "6",
          "--entities", "3", "--durable-rules", "2", "--seed", "7", "--top-k", "3",
          "--no-think"],

@@ -7,23 +7,33 @@ for the LLM, so it runs in seconds with no Ollama. `--live` uses the configured 
 from __future__ import annotations
 
 import argparse
+from collections.abc import Sequence
 from pathlib import Path
 
 from dishka import Provider
 
-from memdiff.adapters.replay.json_file import JsonFileReplayWriter
+from memdiff.audit.application.ports import ReplayWriter
 from memdiff.benchmarks.common.application.workspace import MemoryWorkspaceFactory, WorkspaceSpec
 from memdiff.benchmarks.drift_sim.domain.episode import DriftSimConfig, generate_episode
 from memdiff.bootstrap.container import build_container
+from memdiff.bootstrap.demo_provider import DemoProvider
 from memdiff.bootstrap.providers import OfflineProvider
-from memdiff.bootstrap.settings import get_settings
+from memdiff.bootstrap.settings import Settings, get_settings
 from memdiff.memory.domain.belief import BeliefStatus
 from memdiff.memory.domain.trajectory import Trajectory
 
 
 def run_demo(
-    *, out_dir: Path, sessions: int, top_k: int, live: bool = False, think: bool | None = None
+    *,
+    settings: Settings,
+    out_dir: Path,
+    sessions: int,
+    top_k: int,
+    live: bool = False,
+    think: bool | None = None,
+    providers: Sequence[Provider] = (),
 ) -> dict[str, int]:
+    """`providers` are extra container overrides (tests swap the OpenAI SDK for a fake)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     db_path = out_dir / "demo.sqlite"
     db_path.unlink(missing_ok=True)
@@ -32,7 +42,8 @@ def run_demo(
             num_sessions=sessions, num_entities=3, num_durable_rules=2, noise_events_per_session=1
         )
     )
-    overrides: list[Provider] = [] if live else [OfflineProvider()]
+    replay_path = out_dir / "replay_demo.json"
+    overrides: list[Provider] = [DemoProvider(replay_path), *([] if live else [OfflineProvider()])]
     # the rule-based reconciler matches by surface, so the offline run looks wide
     spec = WorkspaceSpec(
         policy_name="belief_revision",
@@ -41,7 +52,7 @@ def run_demo(
         **({} if live else {"candidate_top_k": 20}),
     )
 
-    container = build_container(get_settings(), *overrides)
+    container = build_container(settings, *overrides, *providers)
     try:
         with container.get(MemoryWorkspaceFactory).open(spec) as ws:
             print("=== 1) insert(): one session per step ===")
@@ -73,8 +84,7 @@ def run_demo(
                 print("    " + top.replace("\n", "\n    "))
 
             stats = ws.policy.stats()
-            replay_path = out_dir / "replay_demo.json"
-            JsonFileReplayWriter(replay_path).write(
+            container.get(ReplayWriter).write(
                 ws.replay.build_bundle(
                     run_id="demo",
                     benchmark="drift_sim_demo",
@@ -110,6 +120,7 @@ def main() -> None:
     parser.add_argument("--no-think", action="store_true", help="With --live: disable qwen thinking.")
     args = parser.parse_args()
     run_demo(
+        settings=get_settings(),
         out_dir=args.out_dir,
         sessions=args.sessions,
         top_k=args.top_k,

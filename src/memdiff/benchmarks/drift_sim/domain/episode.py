@@ -120,8 +120,7 @@ _NOISE_TEMPLATES = [
 ]
 
 
-def generate_episode(config: DriftSimConfig | None = None) -> DriftEpisode:
-    cfg = config or DriftSimConfig()
+def generate_episode(cfg: DriftSimConfig) -> DriftEpisode:
     rng = random.Random(cfg.seed)
 
     selected_entities = _SERVICES[: min(cfg.num_entities, len(_SERVICES))]
