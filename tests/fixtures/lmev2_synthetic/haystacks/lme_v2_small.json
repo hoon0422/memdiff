@@ -1,0 +1,18 @@
+{
+  "q_static_01": [
+    "traj_a",
+    "traj_b"
+  ],
+  "q_static_abs_01": [
+    "traj_a",
+    "traj_b"
+  ],
+  "q_dynamic_01": [
+    "traj_a",
+    "traj_b"
+  ],
+  "q_gotcha_01": [
+    "traj_b",
+    "traj_a"
+  ]
+}

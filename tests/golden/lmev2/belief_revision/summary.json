@@ -1,0 +1,93 @@
+{
+  "benchmark": "lmev2_small_enterprise",
+  "run_id": "run_golden",
+  "policy_name": "belief_revision",
+  "top_k": 3,
+  "max_chunk_chars": 2400,
+  "recency_decay": 0.05,
+  "balanced_per_type": null,
+  "ingest_seconds": 0.0,
+  "query_seconds": 0.0,
+  "memory_stats": {
+    "total_ingested_sources": 2,
+    "active_beliefs": 4,
+    "superseded_beliefs": 1,
+    "refuted_beliefs": 1,
+    "forgotten_beliefs": 0,
+    "raw_chunks": 0,
+    "estimated_active_tokens": 55,
+    "revision_counts": {
+      "ADD": 5,
+      "CONSOLIDATE": 1,
+      "IGNORE": 2,
+      "REFUTE": 1,
+      "SUPERSEDE": 1
+    }
+  },
+  "llm_usage": {
+    "chat_calls": 22,
+    "chat_cache_hits": 2,
+    "embedding_calls": 11,
+    "embedding_cache_hits": 11,
+    "prompt_tokens": 10111,
+    "completion_tokens": 1066,
+    "embedding_tokens": 217,
+    "total_tokens": 11394
+  },
+  "metrics": {
+    "overall": {
+      "overall_full_set": 0.75,
+      "overall_non_abstention_only": 0.6666666666666666,
+      "overall_abstention_only": 1.0,
+      "count_all_questions": 4,
+      "count_non_abstention": 3,
+      "count_abstention": 1
+    },
+    "non_abstention_by_category": {
+      "static": {
+        "count": 1,
+        "pct_correct": 1.0,
+        "pct_answered_wrong": 0.0,
+        "pct_unknown": 0.0
+      },
+      "dynamic": {
+        "count": 1,
+        "pct_correct": 1.0,
+        "pct_answered_wrong": 0.0,
+        "pct_unknown": 0.0
+      },
+      "procedure": {
+        "count": 0,
+        "pct_correct": null,
+        "pct_answered_wrong": null,
+        "pct_unknown": null
+      },
+      "gotchas": {
+        "count": 1,
+        "pct_correct": 0.0,
+        "pct_answered_wrong": 1.0,
+        "pct_unknown": 0.0
+      }
+    },
+    "abstention_by_category": {
+      "static-abs": {
+        "count": 1,
+        "pct_correct": 1.0,
+        "pct_answered_wrong": 0.0,
+        "pct_unknown": 0.0
+      },
+      "dynamic-abs": {
+        "count": 0,
+        "pct_correct": null,
+        "pct_answered_wrong": null,
+        "pct_unknown": null
+      },
+      "procedure-abs": {
+        "count": 0,
+        "pct_correct": null,
+        "pct_answered_wrong": null,
+        "pct_unknown": null
+      }
+    }
+  }
+}
