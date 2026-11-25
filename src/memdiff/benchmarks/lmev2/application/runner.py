@@ -123,9 +123,9 @@ class LMEV2BenchmarkRunner:
                     )
                 query_seconds += time.perf_counter() - t1
 
-                # known bug (#14): every group overwrites the previous group's replay
                 self._store.write_replay(
                     policy,
+                    group_idx,
                     ws.replay.build_bundle(
                         run_id=self._store.run_id,
                         benchmark=f"lmev2_small_{params.domain}",
