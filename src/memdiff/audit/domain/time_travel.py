@@ -22,7 +22,7 @@ def reconstruct_state_at_step(
     A belief's row holds its latest content; the first CONSOLIDATE event after `step` carries the
     values it overwrote, so that event's `previous` is the content at `step`.
 
-    Same rule as `computeStatusAtStep()` in web/src/App.tsx. `events` must be in log order.
+    Same rule as `computeBeliefAtStep()` in web/src/App.tsx. `events` must be in log order.
     """
     visible = {b.id: b for b in beliefs if b.created_at_step <= step}
     status = {bid: BeliefStatus.ACTIVE for bid in visible}

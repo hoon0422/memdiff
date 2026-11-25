@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import NewType
 
 from dishka import Container, Provider, Scope, alias, from_context, provide
 from openai import OpenAI
@@ -25,10 +26,13 @@ from memdiff.adapters.persistence.sqlalchemy.ledger import (
     SqlBeliefRepository,
     SqlChunkRepository,
     SqlUnitOfWork,
+    make_belief_index,
+    make_chunk_index,
     make_ledger_engine,
 )
 from memdiff.adapters.persistence.sqlalchemy.llm_cache import SqlLLMResponseCache
 from memdiff.adapters.prompts.fs_source import FilesystemPromptSource
+from memdiff.adapters.vector.numpy_index import NumpyVectorIndex
 from memdiff.audit.application.ports import AuditLogRepository, BeliefSource
 from memdiff.audit.application.recorder import RevisionAuditRecorder
 from memdiff.audit.application.replay import ReplayService
@@ -64,6 +68,11 @@ from memdiff.memory.application.ports import (
     RevisionEventSink,
     UnitOfWork,
 )
+
+
+# Distinct dishka keys for the two `NumpyVectorIndex` instances of one workspace.
+BeliefIndex = NewType("BeliefIndex", NumpyVectorIndex)
+ChunkIndex = NewType("ChunkIndex", NumpyVectorIndex)
 
 
 class ConfigProvider(Provider):
@@ -154,14 +163,22 @@ class MemoryProvider(Provider):
     uow = alias(source=SqlUnitOfWork, provides=UnitOfWork)
 
     @provide
-    def beliefs(self, uow: SqlUnitOfWork) -> BeliefRepository:
-        return SqlBeliefRepository(uow)
+    def belief_index(self, uow: SqlUnitOfWork) -> BeliefIndex:
+        return BeliefIndex(make_belief_index(uow))
+
+    @provide
+    def chunk_index(self, uow: SqlUnitOfWork) -> ChunkIndex:
+        return ChunkIndex(make_chunk_index(uow))
+
+    @provide
+    def beliefs(self, uow: SqlUnitOfWork, index: BeliefIndex) -> BeliefRepository:
+        return SqlBeliefRepository(uow, index)
 
     belief_source = alias(source=BeliefRepository, provides=BeliefSource)
 
     @provide
-    def chunks(self, uow: SqlUnitOfWork) -> ChunkRepository:
-        return SqlChunkRepository(uow)
+    def chunks(self, uow: SqlUnitOfWork, index: ChunkIndex) -> ChunkRepository:
+        return SqlChunkRepository(uow, index)
 
     @provide
     def audit_log(self, uow: SqlUnitOfWork) -> AuditLogRepository:

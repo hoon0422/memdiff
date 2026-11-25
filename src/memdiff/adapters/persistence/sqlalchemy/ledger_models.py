@@ -18,9 +18,10 @@ class BeliefRow(LedgerBase):
         Index("idx_beliefs_status", "status"),
         Index("idx_beliefs_surface", "surface"),
         Index("idx_beliefs_type", "type"),
+        {"sqlite_autoincrement": True},
     )
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
+    id: Mapped[str] = mapped_column(String, unique=True)
     type: Mapped[str] = mapped_column(String)
     surface: Mapped[str] = mapped_column(String)
     claim: Mapped[str] = mapped_column(Text)
@@ -35,6 +36,8 @@ class BeliefRow(LedgerBase):
     provenance_json: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     embedding: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    # insertion sequence: breaks search-score ties in storage order
+    seq: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
 
 class BeliefEdgeRow(LedgerBase):
@@ -70,12 +73,13 @@ class TimelineEventRow(LedgerBase):
 
 class ChunkRow(LedgerBase):
     __tablename__ = "chunks"
-    __table_args__ = (Index("idx_chunks_source", "source_id"),)
+    __table_args__ = (Index("idx_chunks_source", "source_id"), {"sqlite_autoincrement": True})
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
+    id: Mapped[str] = mapped_column(String, unique=True)
     source_id: Mapped[str] = mapped_column(String)
     step: Mapped[int] = mapped_column(Integer)
     state_index: Mapped[int | None] = mapped_column(Integer, nullable=True)
     text: Mapped[str] = mapped_column(Text)
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     embedding: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    seq: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

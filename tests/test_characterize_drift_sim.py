@@ -1,7 +1,8 @@
 """DriftSim runner (all 4 policies) through the container against the #2 golden snapshots.
 
 Only the SDK provider is faked; settings, prompts, caches, ledgers and runner are the real ones.
-The goldens must never be regenerated for this ticket.
+Update (after an intended behavior change only):
+MEMDIFF_UPDATE_GOLDEN=1 uv run pytest tests/test_characterize_drift_sim.py
 """
 
 from __future__ import annotations

@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 
-from sqlalchemy import Engine, create_engine, func, select, text
+from sqlalchemy import Engine, create_engine, func, select
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
@@ -21,10 +21,6 @@ from memdiff.audit.domain.timeline import BeliefEdge, TimelineEvent
 from memdiff.memory.domain.belief import Belief, BeliefStatus, BeliefType, Provenance
 from memdiff.memory.domain.chunk import Chunk
 from memdiff.memory.domain.revision import RevisionOp
-
-# Insertion order (SQLite rowid) reproduces the pre-refactor store's tie-breaking between equal scores.
-_ROWID = text("rowid")
-
 
 def make_ledger_engine(db_path: str | Path = ":memory:") -> Engine:
     """Open (creating parent dirs and tables) the ledger DB; `:memory:` is one shared connection."""
@@ -78,6 +74,39 @@ class SqlUnitOfWork:
             index.invalidate()
 
 
+def make_belief_index(uow: SqlUnitOfWork) -> NumpyVectorIndex:
+    """Index over active/all belief embeddings, dropped whenever `uow`'s transaction ends.
+
+    Storage order (`seq`) reproduces the pre-refactor store's tie-breaking between equal scores.
+    """
+
+    def load(active_only: object) -> list[tuple[str, int, bytes | None]]:
+        stmt = select(BeliefRow.id, BeliefRow.embedding).where(BeliefRow.embedding.is_not(None))
+        if active_only:
+            stmt = stmt.where(BeliefRow.status == BeliefStatus.ACTIVE.value)
+        return [(i, 0, e) for i, e in uow.session.execute(stmt.order_by(BeliefRow.seq))]
+
+    index = NumpyVectorIndex(load)
+    uow.watch(index)
+    return index
+
+
+def make_chunk_index(uow: SqlUnitOfWork) -> NumpyVectorIndex:
+    """Index over chunk embeddings (storage order, like `make_belief_index`)."""
+
+    def load(_key: object) -> list[tuple[str, int, bytes | None]]:
+        stmt = (
+            select(ChunkRow.id, ChunkRow.step, ChunkRow.embedding)
+            .where(ChunkRow.embedding.is_not(None))
+            .order_by(ChunkRow.seq)
+        )
+        return [tuple(r) for r in uow.session.execute(stmt)]  # type: ignore[misc]
+
+    index = NumpyVectorIndex(load)
+    uow.watch(index)
+    return index
+
+
 def _belief(row: BeliefRow) -> Belief:
     return Belief(
         id=row.id,
@@ -110,16 +139,12 @@ def _fill(row: BeliefRow, b: Belief) -> BeliefRow:
 
 
 class SqlBeliefRepository:
-    def __init__(self, uow: SqlUnitOfWork) -> None:
+    def __init__(self, uow: SqlUnitOfWork, index: NumpyVectorIndex) -> None:
         self._uow = uow
-        self._index = NumpyVectorIndex(self._load)
-        uow.watch(self._index)
+        self._index = index
 
-    def _load(self, active_only: object) -> list[tuple[str, int, bytes | None]]:
-        stmt = select(BeliefRow.id, BeliefRow.embedding).where(BeliefRow.embedding.is_not(None))
-        if active_only:
-            stmt = stmt.where(BeliefRow.status == BeliefStatus.ACTIVE.value)
-        return [(i, 0, e) for i, e in self._uow.session.execute(stmt.order_by(_ROWID))]
+    def _row(self, belief_id: str) -> BeliefRow | None:
+        return self._uow.session.scalar(select(BeliefRow).where(BeliefRow.id == belief_id))
 
     def add(self, belief: Belief, embedding: Sequence[float] | None) -> None:
         row = _fill(BeliefRow(id=belief.id), belief)
@@ -128,7 +153,7 @@ class SqlBeliefRepository:
         self._index.invalidate()
 
     def update(self, belief: Belief, embedding: Sequence[float] | None = None) -> None:
-        row = self._uow.session.get(BeliefRow, belief.id)
+        row = self._row(belief.id)
         assert row is not None, f"unknown belief {belief.id}"
         _fill(row, belief)
         if embedding is not None:
@@ -136,7 +161,7 @@ class SqlBeliefRepository:
         self._index.invalidate()
 
     def get(self, belief_id: str) -> Belief | None:
-        row = self._uow.session.get(BeliefRow, belief_id)
+        row = self._row(belief_id)
         return _belief(row) if row else None
 
     def list_beliefs(
@@ -166,18 +191,9 @@ class SqlBeliefRepository:
 
 
 class SqlChunkRepository:
-    def __init__(self, uow: SqlUnitOfWork) -> None:
+    def __init__(self, uow: SqlUnitOfWork, index: NumpyVectorIndex) -> None:
         self._uow = uow
-        self._index = NumpyVectorIndex(self._load)
-        uow.watch(self._index)
-
-    def _load(self, _key: object) -> list[tuple[str, int, bytes | None]]:
-        stmt = (
-            select(ChunkRow.id, ChunkRow.step, ChunkRow.embedding)
-            .where(ChunkRow.embedding.is_not(None))
-            .order_by(_ROWID)
-        )
-        return [tuple(r) for r in self._uow.session.execute(stmt)]  # type: ignore[misc]
+        self._index = index
 
     def add(self, chunk: Chunk, embedding: Sequence[float] | None) -> None:
         self._uow.session.add(
