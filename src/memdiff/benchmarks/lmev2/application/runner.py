@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
 from typing import Any
 
 from pydantic import BaseModel
 
+from memdiff.benchmarks.common.application.ports import UsageReport
 from memdiff.benchmarks.common.application.workspace import MemoryWorkspaceFactory, WorkspaceSpec
 from memdiff.benchmarks.common.domain.answer import extract_boxed_answer, is_unknown
 from memdiff.benchmarks.lmev2.application.ports import LMEV2Dataset, LMEV2RunStore, Progress, Reader
@@ -42,7 +42,7 @@ class LMEV2BenchmarkRunner:
         reader: Reader,
         scorer: Scorer,
         store: LMEV2RunStore,
-        usage: Callable[[], dict[str, int]],
+        usage: UsageReport,
         progress: Progress,
     ) -> None:
         self._dataset = dataset
@@ -148,7 +148,7 @@ class LMEV2BenchmarkRunner:
             "ingest_seconds": round(ingest_seconds, 2),
             "query_seconds": round(query_seconds, 2),
             "memory_stats": last_stats,
-            "llm_usage": self._usage(),
+            "llm_usage": self._usage.as_dict(),
             "metrics": aggregate_metrics(records),
         }
         self._store.write_summary(policy, summary)

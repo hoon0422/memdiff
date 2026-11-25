@@ -56,12 +56,13 @@ def run(argv: Sequence[str] | None, *, settings: Settings, overrides: Sequence[P
         noise_events_per_session=args.noise_per_session,
         num_durable_rules=args.durable_rules,
     )
-    container = build_container(settings, DriftSimProvider(args.runs_dir), *overrides)
+    container = build_container(
+        settings, DriftSimProvider(runs_dir=args.runs_dir, run_id=run_id), *overrides
+    )
     try:
         summary = container.get(DriftBenchmarkRunner).run(
             config=config,
             policies=args.policies,
-            run_id=run_id,
             top_k=args.top_k,
             recency_decay=args.recency_decay,
             think=False if args.no_think else None,

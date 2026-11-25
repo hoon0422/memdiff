@@ -36,6 +36,7 @@ from memdiff.adapters.vector.numpy_index import NumpyVectorIndex
 from memdiff.audit.application.ports import AuditLogRepository, BeliefSource
 from memdiff.audit.application.recorder import RevisionAuditRecorder
 from memdiff.audit.application.replay import ReplayService
+from memdiff.benchmarks.common.application.ports import UsageReport
 from memdiff.benchmarks.common.application.workspace import (
     MemoryWorkspace,
     MemoryWorkspaceFactory,
@@ -111,6 +112,8 @@ class LLMProvider(Provider):
     @provide
     def usage_stats(self) -> UsageStats:
         return UsageStats()
+
+    usage_report = alias(source=UsageStats, provides=UsageReport)
 
     @provide
     def chat_model(

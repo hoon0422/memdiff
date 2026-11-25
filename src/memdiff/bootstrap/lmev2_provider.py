@@ -13,6 +13,7 @@ from memdiff.adapters.files.lmev2_run_store import JsonLMEV2RunStore
 from memdiff.adapters.http.lmev2_fetcher import HuggingFaceLMEV2Fetcher
 from memdiff.adapters.llm.judges import build_judges
 from memdiff.adapters.llm.lmev2_reader import LMEV2Reader
+from memdiff.benchmarks.common.application.ports import UsageReport
 from memdiff.benchmarks.common.application.workspace import MemoryWorkspaceFactory
 from memdiff.benchmarks.lmev2.application.ports import (
     LMEV2Dataset,
@@ -26,7 +27,6 @@ from memdiff.benchmarks.lmev2.application.scorer import Scorer
 from memdiff.bootstrap.settings import Settings
 from memdiff.llm.application.catalog import PromptCatalog
 from memdiff.llm.application.ports import ChatModel
-from memdiff.llm.domain.usage import UsageStats
 
 
 class LMEV2FetchProvider(Provider):
@@ -73,7 +73,7 @@ class LMEV2Provider(Provider):
         reader: Reader,
         scorer: Scorer,
         store: LMEV2RunStore,
-        usage: UsageStats,
+        usage: UsageReport,
     ) -> LMEV2BenchmarkRunner:
         return LMEV2BenchmarkRunner(
             dataset=dataset,
@@ -81,6 +81,6 @@ class LMEV2Provider(Provider):
             reader=reader,
             scorer=scorer,
             store=store,
-            usage=usage.as_dict,
+            usage=usage,
             progress=self._progress,
         )

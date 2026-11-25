@@ -7,13 +7,14 @@ from collections.abc import Callable
 from typing import Any
 
 from memdiff.audit.domain.replay import ReplayQuestionComparison
+from memdiff.benchmarks.common.application.ports import UsageReport
 from memdiff.benchmarks.common.application.workspace import (
     MemoryWorkspace,
     MemoryWorkspaceFactory,
     WorkspaceSpec,
 )
 from memdiff.benchmarks.common.domain.answer import extract_boxed_answer
-from memdiff.benchmarks.drift_sim.application.ports import DriftReader, DriftRunStore, UsageReport
+from memdiff.benchmarks.drift_sim.application.ports import DriftReader, DriftRunStore
 from memdiff.benchmarks.drift_sim.domain.episode import (
     DriftEpisode,
     DriftSimConfig,
@@ -46,7 +47,6 @@ class DriftBenchmarkRunner:
         *,
         config: DriftSimConfig,
         policies: list[str],
-        run_id: str,
         top_k: int = 6,
         recency_decay: float = 0.15,
         think: bool | None = None,
@@ -58,7 +58,7 @@ class DriftBenchmarkRunner:
         def spec(name: str) -> WorkspaceSpec:
             return WorkspaceSpec(
                 policy_name=name,
-                db_path=self._runs.db_path(run_id, name),
+                db_path=self._runs.db_path(name),
                 recency_decay=recency_decay,
                 think=think,
             )
@@ -67,8 +67,8 @@ class DriftBenchmarkRunner:
         preds_by_policy: dict[str, list[DriftPrediction]] = {}
         for name in policies:
             # check before opening: opening a workspace creates the ledger file
-            saved = self._runs.load_predictions(run_id, name) if resume else None
-            if saved is not None and self._runs.db_exists(run_id, name):
+            saved = self._runs.load_predictions(name) if resume else None
+            if saved is not None and self._runs.db_exists(name):
                 with self._workspaces.open(spec(name)) as ws:
                     ws.policy.resume_from(n_sessions)
                     metrics = aggregate_drift_predictions(saved).model_dump()
@@ -77,29 +77,27 @@ class DriftBenchmarkRunner:
                 results[name], preds_by_policy[name] = metrics, saved
                 continue
 
-            skip_ingest = resume and self._runs.db_exists(run_id, name)
+            skip_ingest = resume and self._runs.db_exists(name)
             if not resume:
-                self._runs.discard_db(run_id, name)
+                self._runs.discard_db(name)
             with self._workspaces.open(spec(name)) as ws:
                 metrics, preds = self._evaluate(
                     ws, episode, name, top_k=top_k, think=think, skip_ingest=skip_ingest
                 )
             results[name], preds_by_policy[name] = metrics, preds
-            self._runs.save_predictions(run_id, name, preds)
+            self._runs.save_predictions(name, preds)
 
-        self._export_replay(
-            run_id, policies, preds_by_policy, spec, n_sessions=n_sessions
-        )
+        self._export_replay(policies, preds_by_policy, spec, n_sessions=n_sessions)
         summary = {
             "benchmark": "drift_sim",
-            "run_id": run_id,
+            "run_id": self._runs.run_id,
             "config": config.model_dump(),
             "top_k": top_k,
             "recency_decay": recency_decay,
             "llm_usage": self._usage.as_dict(),
             "policies": results,
         }
-        self._runs.save_summary(run_id, summary)
+        self._runs.save_summary(summary)
         return summary
 
     def _evaluate(
@@ -157,7 +155,6 @@ class DriftBenchmarkRunner:
 
     def _export_replay(
         self,
-        run_id: str,
         policies: list[str],
         preds_by_policy: dict[str, list[DriftPrediction]],
         spec: Callable[[str], WorkspaceSpec],
@@ -190,11 +187,11 @@ class DriftBenchmarkRunner:
         with self._workspaces.open(spec(replay_policy)) as ws:  # reopen: the ledger is kept
             ws.policy.resume_from(n_sessions)
             bundle = ws.replay.build_bundle(
-                run_id=run_id,
+                run_id=self._runs.run_id,
                 benchmark="drift_sim",
                 policy_name=replay_policy,
                 total_steps=n_sessions,
                 stats=ws.policy.stats(),
                 comparisons=comparisons,
             )
-        self._runs.save_replay(run_id, replay_policy, bundle)
+        self._runs.save_replay(replay_policy, bundle)

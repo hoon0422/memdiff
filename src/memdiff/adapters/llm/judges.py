@@ -4,13 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from memdiff.adapters.llm.chat import ask
 from memdiff.benchmarks.lmev2.domain.scoring.judgement import parse_binary_judgement
 from memdiff.llm.application.catalog import PromptCatalog
 from memdiff.llm.application.ports import ChatModel
-from memdiff.llm.domain.messages import ChatMessage, ChatRequest
 from memdiff.llm.domain.prompt import PromptId
-
-_MAX_COMPLETION_TOKENS = 16384
 
 
 class LlmJudge:
@@ -27,7 +25,7 @@ class LlmJudge:
         self._prompts = prompts
         self._system = system
         self._user = user
-        self._request = ChatRequest(model=model, temperature=0.0, max_tokens=_MAX_COMPLETION_TOKENS)
+        self._model = model
 
     def grade(
         self,
@@ -43,20 +41,15 @@ class LlmJudge:
         ans = (reference or "").strip()
         if require_non_empty and (not pred or not ans):
             return False
-        messages = [
-            ChatMessage(role="system", content=self._prompts.render(self._system)),
-            ChatMessage(
-                role="user",
-                content=self._prompts.render(
-                    self._user,
-                    question=question,
-                    reference=ans,
-                    response=pred,
-                    final_answer=(parsed_answer or pred).strip(),
-                ),
-            ),
-        ]
-        label, _ = parse_binary_judgement(self._chat.complete(messages, self._request).text)
+        user_prompt = self._prompts.render(
+            self._user,
+            question=question,
+            reference=ans,
+            response=pred,
+            final_answer=(parsed_answer or pred).strip(),
+        )
+        text = ask(self._chat, self._prompts.render(self._system), user_prompt, model=self._model)
+        label, _ = parse_binary_judgement(text)
         return label == 1
 
 
