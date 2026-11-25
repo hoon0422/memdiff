@@ -69,7 +69,6 @@ from memdiff.memory.application.ports import (
     UnitOfWork,
 )
 
-
 # Distinct dishka keys for the two `NumpyVectorIndex` instances of one workspace.
 BeliefIndex = NewType("BeliefIndex", NumpyVectorIndex)
 ChunkIndex = NewType("ChunkIndex", NumpyVectorIndex)

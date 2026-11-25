@@ -22,6 +22,7 @@ from memdiff.memory.domain.belief import Belief, BeliefStatus, BeliefType, Prove
 from memdiff.memory.domain.chunk import Chunk
 from memdiff.memory.domain.revision import RevisionOp
 
+
 def make_ledger_engine(db_path: str | Path = ":memory:") -> Engine:
     """Open (creating parent dirs and tables) the ledger DB; `:memory:` is one shared connection."""
     if str(db_path) == ":memory:":

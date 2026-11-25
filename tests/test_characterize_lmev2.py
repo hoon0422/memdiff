@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import itertools
 import types
+from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import TypeVar
 
 import pytest
 from dishka import Container, Provider, Scope, provide
@@ -18,6 +20,8 @@ from openai import OpenAI
 
 from fake_sdk import RecordingFakeSDK
 from memdiff.audit.domain.replay import ReplayBundle
+from memdiff.benchmarks.lmev2.application.ports import Progress
+from memdiff.benchmarks.lmev2.application.progress import NoProgress
 from memdiff.benchmarks.lmev2.application.runner import LMEV2BenchmarkRunner, LMEV2RunParams
 from memdiff.bootstrap.container import build_container
 from memdiff.bootstrap.lmev2_provider import LMEV2Provider
@@ -25,6 +29,8 @@ from memdiff.bootstrap.settings import Settings
 from snapshot_utils import assert_run_matches_golden
 
 FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "lmev2_synthetic"
+T = TypeVar("T")
+QUIET = NoProgress()
 POLICIES = ["naive_rag", "recency_rag", "structured_extract", "belief_revision"]
 
 
@@ -45,8 +51,24 @@ def deterministic_runtime(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("memdiff.audit.domain.timeline.datetime", Clock)
 
 
+class RecordingProgress:
+    """A `Progress` that leaves the items alone and remembers how it was asked to report them."""
+
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, str]] = []
+
+    def track(self, items: Sequence[T], *, desc: str, unit: str) -> Iterable[T]:
+        self.calls.append((desc, unit))
+        return items
+
+
 def lmev2_container(
-    tmp_path: Path, sdk: RecordingFakeSDK, *, data_root: Path = FIXTURE_ROOT, out_dir: Path
+    tmp_path: Path,
+    sdk: RecordingFakeSDK,
+    *,
+    data_root: Path = FIXTURE_ROOT,
+    out_dir: Path,
+    progress: Progress = QUIET,
 ) -> Container:
     settings = Settings(
         _env_file=None,  # type: ignore[call-arg]
@@ -65,7 +87,11 @@ def lmev2_container(
             return sdk  # type: ignore[return-value]
 
     return build_container(
-        settings, FakeSDKProvider(), LMEV2Provider(data_root=data_root, output_dir=out_dir)
+        settings,
+        FakeSDKProvider(),
+        LMEV2Provider(
+            data_root=data_root, output_dir=out_dir, progress=progress
+        ),
     )
 
 
@@ -94,6 +120,26 @@ def test_lmev2_runner_matches_golden(
             "replay_group2.json": f"replay_{policy}_group2.json",
         },
     )
+
+
+def test_lmev2_reports_ingest_and_eval_progress_per_group(tmp_path: Path) -> None:
+    progress = RecordingProgress()
+    container = lmev2_container(
+        tmp_path, RecordingFakeSDK(), out_dir=tmp_path / "run_progress", progress=progress
+    )
+    try:
+        container.get(LMEV2BenchmarkRunner).run(
+            LMEV2RunParams(domain="enterprise", policy_name="naive_rag", top_k=3)
+        )
+    finally:
+        container.close()
+
+    assert progress.calls == [
+        ("[naive_rag] Ingest group 1/2", "traj"),
+        ("[naive_rag] Eval group 1/2", "q"),
+        ("[naive_rag] Ingest group 2/2", "traj"),
+        ("[naive_rag] Eval group 2/2", "q"),
+    ]
 
 
 def test_lmev2_every_group_keeps_its_replay(tmp_path: Path, deterministic_runtime: None) -> None:

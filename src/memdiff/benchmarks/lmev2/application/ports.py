@@ -2,14 +2,22 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, TypeVar
 
 from memdiff.audit.domain.replay import ReplayBundle
 from memdiff.benchmarks.lmev2.domain.dataset import LMEV2Question
 from memdiff.memory.domain.context import MemoryContextItem
 from memdiff.memory.domain.trajectory import Trajectory
+
+T = TypeVar("T")
+
+
+class Progress(Protocol):
+    """Progress display: yields `items` unchanged and reports each one as it is consumed."""
+
+    def track(self, items: Sequence[T], *, desc: str, unit: str) -> Iterable[T]: ...
 
 
 class LMEV2Dataset(Protocol):

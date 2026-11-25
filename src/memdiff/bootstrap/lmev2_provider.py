@@ -18,6 +18,7 @@ from memdiff.benchmarks.lmev2.application.ports import (
     LMEV2Dataset,
     LMEV2Fetcher,
     LMEV2RunStore,
+    Progress,
     Reader,
 )
 from memdiff.benchmarks.lmev2.application.runner import LMEV2BenchmarkRunner
@@ -42,10 +43,11 @@ class LMEV2Provider(Provider):
 
     scope = Scope.APP
 
-    def __init__(self, *, data_root: Path, output_dir: Path) -> None:
+    def __init__(self, *, data_root: Path, output_dir: Path, progress: Progress) -> None:
         super().__init__()
         self._data_root = data_root
         self._output_dir = output_dir
+        self._progress = progress
 
     @provide
     def dataset(self) -> LMEV2Dataset:
@@ -80,4 +82,5 @@ class LMEV2Provider(Provider):
             scorer=scorer,
             store=store,
             usage=usage.as_dict,
+            progress=self._progress,
         )
