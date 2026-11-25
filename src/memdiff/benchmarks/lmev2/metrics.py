@@ -271,7 +271,7 @@ def llm_abstention_checker(
         ],
         model=judge_model,
         temperature=0.0,
-        max_completion_tokens=512,
+        max_completion_tokens=16384,
     )
     label, _ = _parse_binary_judgement(raw)
     return label == 1
@@ -312,7 +312,7 @@ def llm_gotchas_checker(
         ],
         model=judge_model,
         temperature=0.0,
-        max_completion_tokens=512,
+        max_completion_tokens=16384,
     )
     label, _ = _parse_binary_judgement(raw)
     return label == 1

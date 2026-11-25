@@ -102,9 +102,14 @@ class CachedLLMClient:
         temperature: float = 0.0,
         max_completion_tokens: int = 1024,
         response_format: dict[str, Any] | None = None,
+        think: bool | None = None,
+        extra_body: dict[str, Any] | None = None,
         use_cache: bool = True,
     ) -> str:
         target_model = model or self.settings.memdiff_chat_model
+        merged_extra_body = dict(extra_body or {})
+        if think is not None and self.settings.effective_base_url:
+            merged_extra_body.setdefault("reasoning_effort", "medium" if think else "none")
         key = self._hash_payload(
             {
                 "base_url": self.settings.effective_base_url,
@@ -113,6 +118,7 @@ class CachedLLMClient:
                 "temperature": temperature,
                 "max_completion_tokens": max_completion_tokens,
                 "response_format": response_format,
+                "extra_body": merged_extra_body or None,
             }
         )
         if use_cache:
@@ -135,6 +141,8 @@ class CachedLLMClient:
             req["max_completion_tokens"] = max_completion_tokens
         if response_format is not None:
             req["response_format"] = response_format
+        if merged_extra_body:
+            req["extra_body"] = merged_extra_body
 
         resp = self._get_client().chat.completions.create(**req)
         self.usage.chat_calls += 1
@@ -143,7 +151,7 @@ class CachedLLMClient:
             self.usage.completion_tokens += int(getattr(resp.usage, "completion_tokens", 0) or 0)
         text = (resp.choices[0].message.content or "").strip()
 
-        if use_cache:
+        if use_cache and text:
             self._cache_db.execute(
                 "INSERT OR REPLACE INTO chat_cache (cache_key, response_text) VALUES (?, ?)",
                 (key, text),

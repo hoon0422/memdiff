@@ -109,6 +109,8 @@ class BeliefStore:
         self._conn.row_factory = sqlite3.Row
         self._conn.executescript(SCHEMA_SQL)
         self._conn.commit()
+        self._chunk_index: dict[int, tuple[list[str], np.ndarray, np.ndarray]] = {}
+        self._belief_index: dict[tuple[bool, int], tuple[list[str], np.ndarray]] = {}
 
     def close(self) -> None:
         self._conn.close()
@@ -194,6 +196,7 @@ class BeliefStore:
                 summary=f"Added [{belief.type.value}] on {belief.surface}: {belief.claim[:100]}",
                 details={"surface": belief.surface, "type": belief.type.value},
             )
+        self._belief_index.clear()
         self._conn.commit()
         return belief
 
@@ -256,6 +259,7 @@ class BeliefStore:
             summary=f"Superseded {old.id} -> {new_belief.id}: {reason or new_claim[:80]}",
             details={"old_claim": old.claim, "new_claim": new_claim, "reason": reason},
         )
+        self._belief_index.clear()
         self._conn.commit()
         return new_belief
 
@@ -332,6 +336,7 @@ class BeliefStore:
             summary=f"Consolidated evidence (#{updated_count}) into {existing.id} on {existing.surface}",
             details={"evidence_count": updated_count},
         )
+        self._belief_index.clear()
         self._conn.commit()
         refreshed = self.get_belief(existing.id)
         assert refreshed is not None
@@ -365,6 +370,7 @@ class BeliefStore:
             summary=f"Refuted {existing.id}: {reason[:100]}",
             details={"reason": reason},
         )
+        self._belief_index.clear()
         self._conn.commit()
         refreshed = self.get_belief(existing.id)
         assert refreshed is not None
@@ -398,6 +404,7 @@ class BeliefStore:
             summary=f"Forgot {existing.id} ({reason})",
             details={"reason": reason},
         )
+        self._belief_index.clear()
         self._conn.commit()
         refreshed = self.get_belief(existing.id)
         assert refreshed is not None
@@ -482,8 +489,34 @@ class BeliefStore:
                 _vec_to_bytes(embedding),
             ),
         )
+        self._chunk_index.clear()
         self._conn.commit()
         return cid
+
+    def _get_chunk_index(self, dim: int) -> tuple[list[str], np.ndarray, np.ndarray]:
+        cached = self._chunk_index.get(dim)
+        if cached is not None:
+            return cached
+        rows = self._conn.execute(
+            "SELECT id, step, embedding FROM chunks WHERE embedding IS NOT NULL"
+        ).fetchall()
+        ids: list[str] = []
+        steps: list[int] = []
+        vecs: list[np.ndarray] = []
+        for r in rows:
+            vec = _bytes_to_vec(r["embedding"])
+            if vec is None or vec.shape != (dim,):
+                continue
+            ids.append(str(r["id"]))
+            steps.append(int(r["step"]))
+            vecs.append(vec)
+        if not vecs:
+            empty = ([], np.empty(0, dtype=np.int64), np.empty((0, dim), dtype=np.float32))
+            self._chunk_index[dim] = empty
+            return empty
+        entry = (ids, np.asarray(steps, dtype=np.int64), np.vstack(vecs))
+        self._chunk_index[dim] = entry
+        return entry
 
     def search_chunks(
         self,
@@ -493,41 +526,42 @@ class BeliefStore:
         recency_decay: float = 0.0,
     ) -> list[tuple[dict[str, Any], float]]:
         q = np.asarray(query_embedding, dtype=np.float32)
+        if q.ndim != 1 or q.size == 0 or top_k <= 0:
+            return []
         q_norm = float(np.linalg.norm(q))
         if q_norm > 0:
             q = q / q_norm
 
-        rows = self._conn.execute(
-            "SELECT id, source_id, step, state_index, text, metadata_json, embedding FROM chunks"
-        ).fetchall()
-        if not rows:
+        ids, steps, matrix = self._get_chunk_index(int(q.shape[0]))
+        if not ids:
             return []
 
-        max_step = max(int(r["step"]) for r in rows)
-        scored: list[tuple[dict[str, Any], float]] = []
-        for r in rows:
-            vec = _bytes_to_vec(r["embedding"])
-            if vec is None or vec.shape != q.shape:
-                continue
-            sim = float(np.dot(q, vec))
-            if recency_decay > 0.0:
-                age = max(0, max_step - int(r["step"]))
-                sim *= float(np.exp(-recency_decay * age))
-            scored.append(
-                (
-                    {
-                        "id": r["id"],
-                        "source_id": r["source_id"],
-                        "step": int(r["step"]),
-                        "state_index": r["state_index"],
-                        "text": r["text"],
-                        "metadata": json.loads(r["metadata_json"]),
-                    },
-                    sim,
-                )
-            )
-        scored.sort(key=lambda pair: pair[1], reverse=True)
-        return scored[:top_k]
+        scores = matrix @ q
+        if recency_decay > 0.0:
+            ages = np.maximum(0, int(steps.max()) - steps)
+            scores = scores * np.exp(-recency_decay * ages)
+
+        k = min(top_k, len(ids))
+        top_idx = np.argsort(scores)[::-1][:k]
+        top_pairs = [(ids[int(i)], float(scores[int(i)])) for i in top_idx]
+
+        placeholders = ",".join("?" for _ in top_pairs)
+        rows = self._conn.execute(
+            f"SELECT id, source_id, step, state_index, text, metadata_json FROM chunks WHERE id IN ({placeholders})",
+            [cid for cid, _ in top_pairs],
+        ).fetchall()
+        by_id = {
+            str(r["id"]): {
+                "id": r["id"],
+                "source_id": r["source_id"],
+                "step": int(r["step"]),
+                "state_index": r["state_index"],
+                "text": r["text"],
+                "metadata": json.loads(r["metadata_json"]),
+            }
+            for r in rows
+        }
+        return [(by_id[cid], score) for cid, score in top_pairs if cid in by_id]
 
     # ------------------------------------------------------------------
     # Belief retrieval & Time-Travel queries
@@ -576,6 +610,33 @@ class BeliefStore:
         ).fetchall()
         return [self._row_to_belief(r) for r in rows]
 
+    def _get_belief_index(self, *, active_only: bool, dim: int) -> tuple[list[str], np.ndarray]:
+        cache_key = (active_only, dim)
+        cached = self._belief_index.get(cache_key)
+        if cached is not None:
+            return cached
+        sql = "SELECT id, embedding FROM beliefs WHERE embedding IS NOT NULL"
+        params: list[Any] = []
+        if active_only:
+            sql += " AND status = ?"
+            params.append(BeliefStatus.ACTIVE.value)
+        rows = self._conn.execute(sql, params).fetchall()
+        ids: list[str] = []
+        vecs: list[np.ndarray] = []
+        for r in rows:
+            vec = _bytes_to_vec(r["embedding"])
+            if vec is None or vec.shape != (dim,):
+                continue
+            ids.append(str(r["id"]))
+            vecs.append(vec)
+        if not vecs:
+            empty = ([], np.empty((0, dim), dtype=np.float32))
+            self._belief_index[cache_key] = empty
+            return empty
+        entry = (ids, np.vstack(vecs))
+        self._belief_index[cache_key] = entry
+        return entry
+
     def search_beliefs(
         self,
         query_embedding: list[float] | np.ndarray,
@@ -585,27 +646,36 @@ class BeliefStore:
         min_score: float = -1.0,
     ) -> list[tuple[Belief, float]]:
         q = np.asarray(query_embedding, dtype=np.float32)
+        if q.ndim != 1 or q.size == 0 or top_k <= 0:
+            return []
         q_norm = float(np.linalg.norm(q))
         if q_norm > 0:
             q = q / q_norm
 
-        sql = "SELECT * FROM beliefs"
-        params: list[Any] = []
-        if active_only:
-            sql += " WHERE status = ?"
-            params.append(BeliefStatus.ACTIVE.value)
+        ids, matrix = self._get_belief_index(active_only=active_only, dim=int(q.shape[0]))
+        if not ids:
+            return []
 
-        rows = self._conn.execute(sql, params).fetchall()
-        scored: list[tuple[Belief, float]] = []
-        for row in rows:
-            vec = _bytes_to_vec(row["embedding"])
-            if vec is None or vec.shape != q.shape:
-                continue
-            score = float(np.dot(q, vec))
-            if score >= min_score:
-                scored.append((self._row_to_belief(row), score))
-        scored.sort(key=lambda pair: pair[1], reverse=True)
-        return scored[:top_k]
+        scores = matrix @ q
+        valid_mask = scores >= min_score
+        valid_indices = np.flatnonzero(valid_mask)
+        if valid_indices.size == 0:
+            return []
+
+        valid_scores = scores[valid_indices]
+        order = np.argsort(valid_scores)[::-1][:top_k]
+        top_pairs = [
+            (ids[int(valid_indices[int(pos)])], float(valid_scores[int(pos)]))
+            for pos in order
+        ]
+
+        placeholders = ",".join("?" for _ in top_pairs)
+        rows = self._conn.execute(
+            f"SELECT * FROM beliefs WHERE id IN ({placeholders})",
+            [bid for bid, _ in top_pairs],
+        ).fetchall()
+        by_id = {str(r["id"]): self._row_to_belief(r) for r in rows}
+        return [(by_id[bid], score) for bid, score in top_pairs if bid in by_id]
 
     def list_edges(self) -> list[BeliefEdge]:
         rows = self._conn.execute(

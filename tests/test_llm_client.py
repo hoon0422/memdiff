@@ -51,14 +51,15 @@ def test_ollama_client_uses_max_tokens_batches_embeddings_and_caches(tmp_path: P
     client = CachedLLMClient(settings=settings, client=fake_sdk)
 
     # First chat call hits backend using `max_tokens` (Ollama-compatible)
-    out1 = client.chat([{"role": "user", "content": "hello"}], max_completion_tokens=256)
+    out1 = client.chat([{"role": "user", "content": "hello"}], max_completion_tokens=256, think=False)
     assert out1 == "ok-response"
     assert len(fake_completions.calls) == 1
     assert fake_completions.calls[0]["max_tokens"] == 256
+    assert fake_completions.calls[0]["extra_body"] == {"reasoning_effort": "none"}
     assert "max_completion_tokens" not in fake_completions.calls[0]
 
     # Second identical call hits SQLite cache
-    out2 = client.chat([{"role": "user", "content": "hello"}], max_completion_tokens=256)
+    out2 = client.chat([{"role": "user", "content": "hello"}], max_completion_tokens=256, think=False)
     assert out2 == "ok-response"
     assert len(fake_completions.calls) == 1
     assert client.usage.chat_cache_hits == 1

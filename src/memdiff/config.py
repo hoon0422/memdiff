@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # Default: local/SSH-tunneled Ollama OpenAI-compatible endpoint
     llm_base_url: str | None = "http://127.0.0.1:11434/v1"
     llm_api_key: str = "ollama"
-    llm_timeout_seconds: float = 300.0
+    llm_timeout_seconds: float = 600.0
     embedding_batch_size: int = 32
 
     # Optional OpenAI fallbacks
