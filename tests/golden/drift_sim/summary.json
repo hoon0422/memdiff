@@ -1,0 +1,132 @@
+{
+  "benchmark": "drift_sim",
+  "run_id": "run_golden",
+  "config": {
+    "seed": 7,
+    "num_sessions": 6,
+    "num_entities": 3,
+    "contradiction_rate": 0.45,
+    "noise_events_per_session": 2,
+    "num_durable_rules": 2
+  },
+  "top_k": 3,
+  "recency_decay": 0.15,
+  "llm_usage": {
+    "chat_calls": 36,
+    "chat_cache_hits": 6,
+    "embedding_calls": 17,
+    "embedding_cache_hits": 53,
+    "prompt_tokens": 15241,
+    "completion_tokens": 2280,
+    "embedding_tokens": 2245,
+    "total_tokens": 19766
+  },
+  "policies": {
+    "naive_rag": {
+      "total_queries": 5,
+      "overall_accuracy": 0.6,
+      "dynamic_state_count": 3,
+      "dynamic_state_accuracy": 0.3333333333333333,
+      "stale_belief_count": 2,
+      "stale_belief_rate": 0.6666666666666666,
+      "stale_share_of_dynamic_errors": 1.0,
+      "durable_rule_count": 2,
+      "durable_rule_preservation": 1.0,
+      "policy_name": "naive_rag",
+      "top_k": 3,
+      "ingest_seconds": 0.0,
+      "query_seconds": 0.0,
+      "memory_stats": {
+        "total_ingested_sources": 6,
+        "active_beliefs": 0,
+        "superseded_beliefs": 0,
+        "refuted_beliefs": 0,
+        "forgotten_beliefs": 0,
+        "raw_chunks": 25,
+        "estimated_active_tokens": 0,
+        "revision_counts": {}
+      }
+    },
+    "recency_rag": {
+      "total_queries": 5,
+      "overall_accuracy": 0.4,
+      "dynamic_state_count": 3,
+      "dynamic_state_accuracy": 0.6666666666666666,
+      "stale_belief_count": 0,
+      "stale_belief_rate": 0.0,
+      "stale_share_of_dynamic_errors": 0.0,
+      "durable_rule_count": 2,
+      "durable_rule_preservation": 0.0,
+      "policy_name": "recency_rag",
+      "top_k": 3,
+      "ingest_seconds": 0.0,
+      "query_seconds": 0.0,
+      "memory_stats": {
+        "total_ingested_sources": 6,
+        "active_beliefs": 0,
+        "superseded_beliefs": 0,
+        "refuted_beliefs": 0,
+        "forgotten_beliefs": 0,
+        "raw_chunks": 25,
+        "estimated_active_tokens": 0,
+        "revision_counts": {}
+      }
+    },
+    "structured_extract": {
+      "total_queries": 5,
+      "overall_accuracy": 0.8,
+      "dynamic_state_count": 3,
+      "dynamic_state_accuracy": 0.6666666666666666,
+      "stale_belief_count": 1,
+      "stale_belief_rate": 0.3333333333333333,
+      "stale_share_of_dynamic_errors": 1.0,
+      "durable_rule_count": 2,
+      "durable_rule_preservation": 1.0,
+      "policy_name": "structured_extract",
+      "top_k": 3,
+      "ingest_seconds": 0.0,
+      "query_seconds": 0.0,
+      "memory_stats": {
+        "total_ingested_sources": 6,
+        "active_beliefs": 25,
+        "superseded_beliefs": 0,
+        "refuted_beliefs": 0,
+        "forgotten_beliefs": 0,
+        "raw_chunks": 0,
+        "estimated_active_tokens": 477,
+        "revision_counts": {
+          "ADD": 25
+        }
+      }
+    },
+    "belief_revision": {
+      "total_queries": 5,
+      "overall_accuracy": 1.0,
+      "dynamic_state_count": 3,
+      "dynamic_state_accuracy": 1.0,
+      "stale_belief_count": 0,
+      "stale_belief_rate": 0.0,
+      "stale_share_of_dynamic_errors": 0.0,
+      "durable_rule_count": 2,
+      "durable_rule_preservation": 1.0,
+      "policy_name": "belief_revision",
+      "top_k": 3,
+      "ingest_seconds": 0.0,
+      "query_seconds": 0.0,
+      "memory_stats": {
+        "total_ingested_sources": 6,
+        "active_beliefs": 5,
+        "superseded_beliefs": 8,
+        "refuted_beliefs": 0,
+        "forgotten_beliefs": 0,
+        "raw_chunks": 0,
+        "estimated_active_tokens": 121,
+        "revision_counts": {
+          "ADD": 5,
+          "IGNORE": 12,
+          "SUPERSEDE": 8
+        }
+      }
+    }
+  }
+}
