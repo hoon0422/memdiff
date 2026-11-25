@@ -67,7 +67,7 @@ forbidden_modules =
     memdiff.benchmarks
 
 [importlinter:contract:forbidden-memory]
-name = memory: no infra libs, no outer layers, no llm
+name = memory: no infra libs, no outer layers, no llm, no audit
 type = forbidden
 source_modules =
     memdiff.memory.domain
@@ -81,9 +81,10 @@ forbidden_modules =
     memdiff.presentation
     memdiff.bootstrap
     memdiff.llm
+    memdiff.audit
 
 [importlinter:contract:forbidden-audit]
-name = audit: no infra libs, no outer layers, no llm
+name = audit: no infra libs, no outer layers, no llm, memory.domain only
 type = forbidden
 source_modules =
     memdiff.audit.domain
@@ -97,6 +98,7 @@ forbidden_modules =
     memdiff.presentation
     memdiff.bootstrap
     memdiff.llm
+    memdiff.memory.application
 
 [importlinter:contract:forbidden-benchmarks]
 name = benchmarks: no infra libs, no outer layers, no llm
