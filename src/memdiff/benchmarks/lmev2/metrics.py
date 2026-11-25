@@ -1,4 +1,4 @@
-"""Compatibility facade: scoring now lives in `common.domain.answer` and `lmev2.{domain,application}`.
+"""Compatibility facade for the deterministic matchers: scoring now lives in `common.domain.answer` and `lmev2.{domain,application}`.
 
 Kept until #12 removes it; new code imports from the real modules.
 """
@@ -15,8 +15,6 @@ from memdiff.benchmarks.common.domain.answer import (
     normalize_phrase,
     split_phrases,
 )
-from memdiff.benchmarks.lmev2.application.judges import llm_abstention_checker, llm_gotchas_checker
-from memdiff.benchmarks.lmev2.application.scorer import JUDGES
 from memdiff.benchmarks.lmev2.domain.scoring.aggregate import aggregate_metrics
 from memdiff.benchmarks.lmev2.domain.scoring.categories import (
     ABSTENTION_CATEGORIES,
@@ -34,7 +32,7 @@ from memdiff.benchmarks.lmev2.domain.scoring.spec import EvalSpec
 
 def eval_from_spec(spec: str, prediction: str | None, answer: str | None, **overrides: Any) -> bool:
     parsed = EvalSpec.parse(spec)
-    fn = {**MATCHERS, **JUDGES}[parsed.name]
+    fn = MATCHERS[parsed.name]
     return bool(fn(prediction, answer, **{**parsed.options, **overrides}))
 
 
@@ -47,8 +45,6 @@ __all__ = [
     "eval_from_spec",
     "extract_boxed_answer",
     "is_unknown",
-    "llm_abstention_checker",
-    "llm_gotchas_checker",
     "mc_choice_match",
     "mc_choice_set_match",
     "norm_phrase_set_match",
