@@ -25,7 +25,7 @@ dev = [
 ]
 
 [project.scripts]
-memdiff-fetch = "memdiff.benchmarks.lmev2.fetcher:main"
+memdiff-fetch = "memdiff.presentation.cli.fetch_lmev2:main"
 
 [build-system]
 requires = ["hatchling"]

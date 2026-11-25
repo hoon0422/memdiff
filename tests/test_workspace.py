@@ -135,12 +135,14 @@ def test_lmev2_trajectories_produce_the_golden_extractor_and_reconciler_requests
     """Sampled long UI trajectories (domain=enterprise, failure -> success) through the LLM stack."""
     from collections import defaultdict
 
-    from memdiff.benchmarks.lmev2.loader import load_haystack, load_questions, load_trajectories
+    from memdiff.adapters.files.lmev2_dataset import JsonlLMEV2Dataset
+    from memdiff.benchmarks.lmev2.domain.dataset import needed_trajectory_ids
 
     root = Path(__file__).parent / "fixtures" / "lmev2_synthetic"
-    questions = load_questions(root, domain="enterprise")
-    haystack = load_haystack(root, tier="small")
-    trajectories = load_trajectories(root, allowed_ids={t for q in questions for t in haystack[q.id]})
+    dataset = JsonlLMEV2Dataset(root)
+    questions = dataset.load_questions(domain="enterprise")
+    haystack = dataset.load_haystack()
+    trajectories = dataset.load_trajectories(allowed_ids=needed_trajectory_ids(questions, haystack))
     groups: dict[tuple[str, ...], list[Any]] = defaultdict(list)
     for q in questions:
         groups[tuple(haystack[q.id])].append(q)
@@ -152,7 +154,7 @@ def test_lmev2_trajectories_produce_the_golden_extractor_and_reconciler_requests
             spec = WorkspaceSpec(policy_name=policy, db_path=tmp_path / f"g{i}.sqlite")
             with container.get(MemoryWorkspaceFactory).open(spec) as ws:
                 for tid in order:
-                    ws.policy.insert(Trajectory.model_validate(trajectories[tid]))
+                    ws.policy.insert(trajectories[tid])
                 for q in qs:
                     ws.policy.query(q.question, top_k=3)
     finally:

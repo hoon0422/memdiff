@@ -6,8 +6,7 @@ from typing import Any
 
 from memdiff.benchmarks.drift_sim.runner import run_drift_sim_benchmark
 from memdiff.benchmarks.drift_sim.simulator import DriftSimConfig
-from memdiff.benchmarks.lmev2.loader import LMEV2Question
-from memdiff.benchmarks.lmev2.runner import select_balanced_questions
+from memdiff.benchmarks.lmev2.domain.dataset import LMEV2Question, select_balanced_questions
 from memdiff.config import Settings
 from memdiff.core.models import Belief, BeliefType, RevisionOp
 from memdiff.llm.openai_client import CachedLLMClient
