@@ -40,5 +40,5 @@ This repository is public. Keep `.env`, `/data/`, `/runs/`, `.cache/`, `*.db`, `
 
 Run all relevant checks before finishing a task:
 
-- **Python (`src/`, `tests/`, `scripts/`)**: `uv run pytest -v && uv run ruff check src tests scripts` (all unit tests must stay fast, deterministic, and offline; keep live LLM execution inside `scripts/`).
+- **Python (`src/`, `tests/`, `scripts/`)**: `uv run pytest -v && uv run ruff check src tests scripts && uv run lint-imports` (all unit tests must stay fast, deterministic, and offline; keep live LLM execution inside `scripts/`).
 - **Web UI (`web/`)**: `pnpm --dir web build` (`tsc -b && vite build` must succeed with zero errors).

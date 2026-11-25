@@ -1,0 +1,119 @@
+# Architecture contracts. One block per bounded context; extend a block, don't restructure.
+# Gate: `uv run lint-imports` (also run by tests/test_architecture.py).
+[importlinter]
+root_package = memdiff
+include_external_packages = True
+
+# ── layers: application may import domain, never the reverse ─────────────────────────────
+[importlinter:contract:layers-llm]
+name = llm: application -> domain
+type = layers
+layers =
+    memdiff.llm.application
+    memdiff.llm.domain
+
+[importlinter:contract:layers-memory]
+name = memory: application -> domain
+type = layers
+layers =
+    memdiff.memory.application
+    memdiff.memory.domain
+
+[importlinter:contract:layers-audit]
+name = audit: application -> domain
+type = layers
+layers =
+    memdiff.audit.application
+    memdiff.audit.domain
+
+[importlinter:contract:layers-benchmarks-common]
+name = benchmarks.common: application -> domain
+type = layers
+layers =
+    memdiff.benchmarks.common.application
+    memdiff.benchmarks.common.domain
+
+[importlinter:contract:layers-benchmarks-drift-sim]
+name = benchmarks.drift_sim: application -> domain
+type = layers
+layers =
+    memdiff.benchmarks.drift_sim.application
+    memdiff.benchmarks.drift_sim.domain
+
+[importlinter:contract:layers-benchmarks-lmev2]
+name = benchmarks.lmev2: application -> domain
+type = layers
+layers =
+    memdiff.benchmarks.lmev2.application
+    memdiff.benchmarks.lmev2.domain
+
+# ── forbidden: no infrastructure libs or outer layers inside domain/application ──────────
+[importlinter:contract:forbidden-llm]
+name = llm: no infra libs, no outer layers, no other contexts
+type = forbidden
+source_modules =
+    memdiff.llm.domain
+    memdiff.llm.application
+forbidden_modules =
+    sqlalchemy
+    openai
+    httpx
+    dishka
+    memdiff.adapters
+    memdiff.presentation
+    memdiff.bootstrap
+    memdiff.memory
+    memdiff.audit
+    memdiff.benchmarks
+
+[importlinter:contract:forbidden-memory]
+name = memory: no infra libs, no outer layers, no llm
+type = forbidden
+source_modules =
+    memdiff.memory.domain
+    memdiff.memory.application
+forbidden_modules =
+    sqlalchemy
+    openai
+    httpx
+    dishka
+    memdiff.adapters
+    memdiff.presentation
+    memdiff.bootstrap
+    memdiff.llm
+
+[importlinter:contract:forbidden-audit]
+name = audit: no infra libs, no outer layers, no llm
+type = forbidden
+source_modules =
+    memdiff.audit.domain
+    memdiff.audit.application
+forbidden_modules =
+    sqlalchemy
+    openai
+    httpx
+    dishka
+    memdiff.adapters
+    memdiff.presentation
+    memdiff.bootstrap
+    memdiff.llm
+
+[importlinter:contract:forbidden-benchmarks]
+name = benchmarks: no infra libs, no outer layers, no llm
+type = forbidden
+source_modules =
+    memdiff.benchmarks.common.domain
+    memdiff.benchmarks.common.application
+    memdiff.benchmarks.drift_sim.domain
+    memdiff.benchmarks.drift_sim.application
+    memdiff.benchmarks.lmev2.domain
+    memdiff.benchmarks.lmev2.application
+forbidden_modules =
+    sqlalchemy
+    openai
+    httpx
+    dishka
+    memdiff.adapters
+    memdiff.presentation
+    memdiff.bootstrap
+    memdiff.llm
