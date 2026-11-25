@@ -15,6 +15,7 @@ from memdiff.benchmarks.common.domain.answer import (
     normalize_phrase,
     split_phrases,
 )
+from memdiff.benchmarks.lmev2.application.judges import llm_abstention_checker, llm_gotchas_checker
 from memdiff.benchmarks.lmev2.application.scorer import JUDGES
 from memdiff.benchmarks.lmev2.domain.scoring.aggregate import aggregate_metrics
 from memdiff.benchmarks.lmev2.domain.scoring.categories import (
@@ -46,6 +47,8 @@ __all__ = [
     "eval_from_spec",
     "extract_boxed_answer",
     "is_unknown",
+    "llm_abstention_checker",
+    "llm_gotchas_checker",
     "mc_choice_match",
     "mc_choice_set_match",
     "norm_phrase_set_match",
