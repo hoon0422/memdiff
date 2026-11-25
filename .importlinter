@@ -133,6 +133,8 @@ forbidden_modules =
 [importlinter:contract:vector-index-adapters-only]
 name = adapters.vector: imported only from adapters and bootstrap
 type = forbidden
+# bootstrap legitimately wires adapters; only a direct import is a violation
+allow_indirect_imports = True
 source_modules =
     memdiff.memory
     memdiff.audit

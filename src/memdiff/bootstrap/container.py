@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from dishka import Container, Provider, make_container
 
-from memdiff.bootstrap.providers import ConfigProvider, LLMProvider, PromptProvider
+from memdiff.bootstrap.providers import (
+    ConfigProvider,
+    LLMProvider,
+    MemoryProvider,
+    PromptProvider,
+    WorkspaceProvider,
+)
 from memdiff.bootstrap.settings import Settings
 from memdiff.llm.application.catalog import PromptCatalog
 
@@ -13,7 +19,13 @@ def build_container(settings: Settings, *overrides: Provider) -> Container:
     `overrides` are extra providers (tests, offline demo) whose `@provide(override=True)` wins.
     """
     container = make_container(
-        ConfigProvider(), LLMProvider(), PromptProvider(), *overrides, context={Settings: settings}
+        ConfigProvider(),
+        LLMProvider(),
+        PromptProvider(),
+        MemoryProvider(),
+        WorkspaceProvider(),
+        *overrides,
+        context={Settings: settings},
     )
     try:
         container.get(PromptCatalog)  # eager: a bad prompt fails startup, not the first LLM call
