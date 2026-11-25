@@ -10,8 +10,7 @@ from memdiff.audit.application.recorder import RevisionAuditRecorder
 from memdiff.audit.application.replay import ReplayService
 from memdiff.memory.application.policies import (
     BeliefRevisionPolicy,
-    NaiveRagPolicy,
-    RecencyRagPolicy,
+    RagPolicy,
     StructuredExtractPolicy,
 )
 from memdiff.memory.domain.belief import Belief, BeliefType, Provenance
@@ -108,9 +107,11 @@ def _new_stack(name: str) -> tuple[Any, ReplayService, InMemoryBeliefRepository]
     sink, embedder, extractor = RevisionAuditRecorder(log), HashEmbedder(), ScriptedExtractor(_extract)
     ids = counter_ids("b_")
     if name == "naive_rag":
-        policy: Any = NaiveRagPolicy(chunks=chunks, embedder=embedder, uow=uow)
+        policy: Any = RagPolicy(policy_name="naive_rag", chunks=chunks, embedder=embedder, uow=uow)
     elif name == "recency_rag":
-        policy = RecencyRagPolicy(chunks=chunks, embedder=embedder, uow=uow)
+        policy = RagPolicy(
+            policy_name="recency_rag", chunks=chunks, embedder=embedder, uow=uow, recency_decay=0.05
+        )
     elif name == "structured_extract":
         policy = StructuredExtractPolicy(
             beliefs=beliefs, chunks=chunks, embedder=embedder, extractor=extractor,

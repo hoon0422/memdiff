@@ -1,7 +1,8 @@
 """DriftSim runner (all 4 policies) through the container against the #2 golden snapshots.
 
 Only the SDK provider is faked; settings, prompts, caches, ledgers and runner are the real ones.
-The goldens must never be regenerated for this ticket.
+Update (after an intended behavior change only):
+MEMDIFF_UPDATE_GOLDEN=1 uv run pytest tests/test_characterize_drift_sim.py
 """
 
 from __future__ import annotations
@@ -59,7 +60,9 @@ def drift_settings(tmp_path: Path, cache: str = "cache") -> Settings:
     )
 
 
-def drift_container(tmp_path: Path, sdk: RecordingFakeSDK, cache: str = "cache") -> Container:
+def drift_container(
+    tmp_path: Path, sdk: RecordingFakeSDK, cache: str = "cache", run_id: str = "r"
+) -> Container:
     settings = drift_settings(tmp_path, cache)
 
     class FakeSDKProvider(Provider):
@@ -69,19 +72,18 @@ def drift_container(tmp_path: Path, sdk: RecordingFakeSDK, cache: str = "cache")
         def sdk_client(self) -> OpenAI:
             return sdk  # type: ignore[return-value]
 
-    return build_container(settings, DriftSimProvider(tmp_path / "runs"), FakeSDKProvider())
+    return build_container(settings, DriftSimProvider(runs_dir=tmp_path / "runs", run_id=run_id), FakeSDKProvider())
 
 
 def test_drift_sim_runner_matches_golden(
     tmp_path: Path, deterministic_ids_and_clock: None
 ) -> None:
     sdk = RecordingFakeSDK()
-    container = drift_container(tmp_path, sdk)
+    container = drift_container(tmp_path, sdk, run_id="run_golden")
     try:
         container.get(DriftBenchmarkRunner).run(
             config=CONFIG,
             policies=POLICIES,
-            run_id="run_golden",
             top_k=3,
             think=False,  # exercises the reasoning_effort=none request path
         )
@@ -113,7 +115,7 @@ def test_replay_falls_back_to_the_last_policy_when_belief_revision_is_absent(
     container = drift_container(tmp_path, RecordingFakeSDK())
     try:
         summary = container.get(DriftBenchmarkRunner).run(
-            config=CONFIG, policies=["naive_rag", "recency_rag"], run_id="r", top_k=3
+            config=CONFIG, policies=["naive_rag", "recency_rag"], top_k=3
         )
     finally:
         container.close()
@@ -134,7 +136,7 @@ def _run(
     container = drift_container(tmp_path, sdk, cache)
     try:
         return container.get(DriftBenchmarkRunner).run(
-            config=CONFIG, policies=policies, run_id="r", top_k=3, **kw
+            config=CONFIG, policies=policies, top_k=3, **kw
         )
     finally:
         container.close()
@@ -195,7 +197,7 @@ def test_without_resume_an_existing_run_is_rebuilt_from_scratch(tmp_path: Path) 
 def test_cli_runs_through_the_container_and_prints_the_summary(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    from memdiff.presentation.cli.drift_sim import main
+    from memdiff.presentation.cli.drift_sim import run
 
     sdk = RecordingFakeSDK()
     settings = drift_settings(tmp_path)
@@ -207,7 +209,7 @@ def test_cli_runs_through_the_container_and_prints_the_summary(
         def sdk_client(self) -> OpenAI:
             return sdk  # type: ignore[return-value]
 
-    main(
+    run(
         ["--run-id", "cli", "--runs-dir", str(tmp_path / "out"), "--sessions", "6",
          "--entities", "3", "--durable-rules", "2", "--seed", "7", "--top-k", "3",
          "--no-think"],

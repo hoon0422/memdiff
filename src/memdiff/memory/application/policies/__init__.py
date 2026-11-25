@@ -1,11 +1,9 @@
 from .belief_revision import BeliefRevisionPolicy
-from .naive_rag import NaiveRagPolicy
-from .recency_rag import RecencyRagPolicy
+from .rag import RagPolicy
 from .structured_extract import StructuredExtractPolicy
 
 __all__ = [
     "BeliefRevisionPolicy",
-    "NaiveRagPolicy",
-    "RecencyRagPolicy",
+    "RagPolicy",
     "StructuredExtractPolicy",
 ]

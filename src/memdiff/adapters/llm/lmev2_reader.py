@@ -6,14 +6,12 @@ import base64
 import mimetypes
 from pathlib import Path
 
+from memdiff.adapters.llm.chat import ask, join_memory
 from memdiff.benchmarks.lmev2.domain.dataset import LMEV2Question
 from memdiff.llm.application.catalog import PromptCatalog
 from memdiff.llm.application.ports import ChatModel
-from memdiff.llm.domain.messages import ChatMessage, ChatRequest
 from memdiff.llm.domain.prompt import PromptId
 from memdiff.memory.domain.context import MemoryContextItem
-
-_MAX_COMPLETION_TOKENS = 16384  # qwen3.5 thinks by default; keep room for `content`
 
 
 def _image_data_url(path: Path) -> str:
@@ -45,7 +43,7 @@ class LMEV2Reader:
         chunks = [c.value for c in context if c.type == "text"]
         user_text = self._prompts.render(
             PromptId.LMEV2_READER_USER,
-            memory="\n\n---\n\n".join(chunks) if chunks else "(no retrieved memory)",
+            memory=join_memory(chunks),
             question=question.question,
         )
         user_content: str | list[dict[str, object]] = user_text
@@ -54,11 +52,10 @@ class LMEV2Reader:
                 {"type": "text", "text": user_text},
                 {"type": "image_url", "image_url": {"url": _image_data_url(image_path)}},
             ]
-        messages = [
-            ChatMessage(role="system", content=self._prompts.render(system_id)),
-            ChatMessage(role="user", content=user_content),
-        ]
-        request = ChatRequest(
-            model=self._model, temperature=0.0, max_tokens=_MAX_COMPLETION_TOKENS, think=think
+        return ask(
+            self._chat,
+            self._prompts.render(system_id),
+            user_content,
+            model=self._model,
+            think=think,
         )
-        return self._chat.complete(messages, request).text

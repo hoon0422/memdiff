@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
 from typing import Any
 
 from pydantic import BaseModel
-from tqdm import tqdm
 
+from memdiff.benchmarks.common.application.ports import UsageReport
 from memdiff.benchmarks.common.application.workspace import MemoryWorkspaceFactory, WorkspaceSpec
 from memdiff.benchmarks.common.domain.answer import extract_boxed_answer, is_unknown
-from memdiff.benchmarks.lmev2.application.ports import LMEV2Dataset, LMEV2RunStore, Reader
+from memdiff.benchmarks.lmev2.application.ports import LMEV2Dataset, LMEV2RunStore, Progress, Reader
 from memdiff.benchmarks.lmev2.application.scorer import Scorer
 from memdiff.benchmarks.lmev2.domain.dataset import (
     group_by_haystack,
@@ -43,7 +42,8 @@ class LMEV2BenchmarkRunner:
         reader: Reader,
         scorer: Scorer,
         store: LMEV2RunStore,
-        usage: Callable[[], dict[str, int]],
+        usage: UsageReport,
+        progress: Progress,
     ) -> None:
         self._dataset = dataset
         self._workspaces = workspaces
@@ -51,6 +51,7 @@ class LMEV2BenchmarkRunner:
         self._scorer = scorer
         self._store = store
         self._usage = usage
+        self._progress = progress
 
     def run(self, params: LMEV2RunParams) -> dict[str, Any]:
         policy = params.policy_name
@@ -80,7 +81,7 @@ class LMEV2BenchmarkRunner:
             )
             with self._workspaces.open(spec) as ws:
                 t0 = time.perf_counter()
-                for tid in tqdm(
+                for tid in self._progress.track(
                     traj_order, desc=f"[{policy}] Ingest group {group_idx}/{len(groups)}", unit="traj"
                 ):
                     if (traj := trajectories.get(tid)) is not None:
@@ -89,7 +90,7 @@ class LMEV2BenchmarkRunner:
                 last_stats = ws.policy.stats().model_dump()
 
                 t1 = time.perf_counter()
-                for q in tqdm(
+                for q in self._progress.track(
                     group_qs, desc=f"[{policy}] Eval group {group_idx}/{len(groups)}", unit="q"
                 ):
                     image = self._dataset.image_path(q) if params.include_images else None
@@ -147,7 +148,7 @@ class LMEV2BenchmarkRunner:
             "ingest_seconds": round(ingest_seconds, 2),
             "query_seconds": round(query_seconds, 2),
             "memory_stats": last_stats,
-            "llm_usage": self._usage(),
+            "llm_usage": self._usage.as_dict(),
             "metrics": aggregate_metrics(records),
         }
         self._store.write_summary(policy, summary)

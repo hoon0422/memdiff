@@ -11,31 +11,28 @@ from memdiff.benchmarks.drift_sim.domain.prediction import DriftPrediction
 
 
 class FileDriftRunStore:
-    def __init__(self, runs_dir: Path) -> None:
-        self._runs_dir = runs_dir
+    def __init__(self, run_dir: Path) -> None:
+        self._dir = run_dir
+        self._dir.mkdir(parents=True, exist_ok=True)
+        self.run_id = run_dir.name
 
-    def _dir(self, run_id: str) -> Path:
-        path = self._runs_dir / run_id
-        path.mkdir(parents=True, exist_ok=True)
-        return path
+    def _db(self, policy: str) -> Path:
+        return self._dir / f"{policy}.sqlite"
 
-    def _db(self, run_id: str, policy: str) -> Path:
-        return self._dir(run_id) / f"{policy}.sqlite"
+    def _predictions(self, policy: str) -> Path:
+        return self._dir / f"{policy}_predictions.jsonl"
 
-    def _predictions(self, run_id: str, policy: str) -> Path:
-        return self._dir(run_id) / f"{policy}_predictions.jsonl"
+    def db_path(self, policy: str) -> Path:
+        return self._db(policy)
 
-    def db_path(self, run_id: str, policy: str) -> Path:
-        return self._db(run_id, policy)
+    def db_exists(self, policy: str) -> bool:
+        return self._db(policy).exists()
 
-    def db_exists(self, run_id: str, policy: str) -> bool:
-        return self._db(run_id, policy).exists()
+    def discard_db(self, policy: str) -> None:
+        self._db(policy).unlink(missing_ok=True)
 
-    def discard_db(self, run_id: str, policy: str) -> None:
-        self._db(run_id, policy).unlink(missing_ok=True)
-
-    def load_predictions(self, run_id: str, policy: str) -> list[DriftPrediction] | None:
-        path = self._predictions(run_id, policy)
+    def load_predictions(self, policy: str) -> list[DriftPrediction] | None:
+        path = self._predictions(policy)
         if not path.exists():
             return None
         return [
@@ -44,17 +41,15 @@ class FileDriftRunStore:
             if line.strip()
         ]
 
-    def save_predictions(
-        self, run_id: str, policy: str, predictions: list[DriftPrediction]
-    ) -> None:
-        with self._predictions(run_id, policy).open("w", encoding="utf-8") as fp:
+    def save_predictions(self, policy: str, predictions: list[DriftPrediction]) -> None:
+        with self._predictions(policy).open("w", encoding="utf-8") as fp:
             for pred in predictions:
                 fp.write(json.dumps(pred.model_dump(), ensure_ascii=False) + "\n")
 
-    def save_replay(self, run_id: str, policy: str, bundle: ReplayBundle) -> None:
-        JsonFileReplayWriter(self._dir(run_id) / f"replay_{policy}.json").write(bundle)
+    def save_replay(self, policy: str, bundle: ReplayBundle) -> None:
+        JsonFileReplayWriter(self._dir / f"replay_{policy}.json").write(bundle)
 
-    def save_summary(self, run_id: str, summary: dict[str, object]) -> None:
-        (self._dir(run_id) / "summary.json").write_text(
+    def save_summary(self, summary: dict[str, object]) -> None:
+        (self._dir / "summary.json").write_text(
             json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )

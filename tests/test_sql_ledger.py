@@ -11,6 +11,8 @@ from memdiff.adapters.persistence.sqlalchemy.ledger import (
     SqlBeliefRepository,
     SqlChunkRepository,
     SqlUnitOfWork,
+    make_belief_index,
+    make_chunk_index,
     make_ledger_engine,
 )
 from memdiff.audit.application.recorder import RevisionAuditRecorder
@@ -35,8 +37,8 @@ class Ledger:
     def __init__(self, db_path: str = ":memory:") -> None:
         self.engine = make_ledger_engine(db_path)
         self.uow = SqlUnitOfWork(self.engine)
-        self.beliefs = SqlBeliefRepository(self.uow)
-        self.chunks = SqlChunkRepository(self.uow)
+        self.beliefs = SqlBeliefRepository(self.uow, make_belief_index(self.uow))
+        self.chunks = SqlChunkRepository(self.uow, make_chunk_index(self.uow))
         self.log = SqlAuditLog(self.uow)
 
     def close(self) -> None:
@@ -278,6 +280,27 @@ def test_commit_persists_and_file_db_reopens(tmp_path) -> None:  # type: ignore[
         again.close()
 
 
+def test_equal_scores_rank_latest_insertion_first_across_reopen(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    path = str(tmp_path / "ledger.db")
+    led = Ledger(path)
+    for i in ("z", "a"):  # id order differs from insertion order
+        led.beliefs.add(_belief(i), [1.0, 0.0])
+        led.chunks.add(Chunk(id=f"c{i}", source_id="s", step=1, text="t"), [1.0, 0.0])
+    led.uow.commit()
+    led.close()
+    again = Ledger(path)
+    try:
+        again.beliefs.add(_belief("m"), [1.0, 0.0])
+        assert [b.id for b, _ in again.beliefs.search([1.0, 0.0], top_k=3, active_only=True)] == [
+            "m", "a", "z",  # exact ties: reverse insertion order (not id order)
+        ]
+        assert [c.id for c, _ in again.chunks.search([1.0, 0.0], top_k=2, recency_decay=0.0)] == [
+            "ca", "cz",
+        ]
+    finally:
+        again.close()
+
+
 def test_schema_table_and_column_names(ledger) -> None:  # type: ignore[no-untyped-def]
     insp = inspect(ledger.engine)
     cols = {t: [c["name"] for c in insp.get_columns(t)] for t in insp.get_table_names()}
@@ -287,9 +310,10 @@ def test_schema_table_and_column_names(ledger) -> None:  # type: ignore[no-untyp
     ]
     assert cols["belief_edges"] == ["id", "source_id", "target_id", "relation", "step", "reason"]
     assert cols["chunks"] == [
-        "id", "source_id", "step", "state_index", "text", "metadata_json", "embedding",
+        "id", "source_id", "step", "state_index", "text", "metadata_json", "embedding", "seq",
     ]
     assert "closed_set_json" in cols["beliefs"] and "provenance_json" in cols["beliefs"]
+    assert cols["beliefs"][-1] == "seq"  # insertion sequence: orders ties without raw SQL
     with ledger.engine.connect() as conn:  # the hint printed by scripts/demo_memory.py
         conn.execute(text("SELECT step, op, summary FROM timeline_events"))
 

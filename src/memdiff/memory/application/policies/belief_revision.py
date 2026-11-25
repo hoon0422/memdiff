@@ -16,7 +16,6 @@ from memdiff.memory.application.ports import (
 from memdiff.memory.domain.belief import Belief, BeliefStatus, Provenance, new_belief_id
 from memdiff.memory.domain.context import MemoryContextItem, MemoryStats
 from memdiff.memory.domain.revision import (
-    BeliefAdded,
     BeliefConsolidated,
     BeliefForgotten,
     BeliefRefuted,
@@ -28,7 +27,7 @@ from memdiff.memory.domain.revision import (
 from memdiff.memory.domain.rules import consolidate, is_noise, should_forget
 from memdiff.memory.domain.trajectory import Trajectory
 
-from ._base import SteppedPolicy
+from ._base import SteppedPolicy, emit_added, materialize
 
 
 class BeliefRevisionPolicy(SteppedPolicy):
@@ -114,30 +113,16 @@ class BeliefRevisionPolicy(SteppedPolicy):
         else:
             belief = self._materialize(cand, cand.claim, source_id, surface=cand.surface)
             self._beliefs.add(belief, emb)
-            self._events.emit(
-                BeliefAdded(
-                    step=step,
-                    source_id=source_id,
-                    belief_id=belief.id,
-                    belief_type=belief.type,
-                    surface=belief.surface,
-                    claim=belief.claim,
-                )
-            )
+            emit_added(self._events, belief, step=step, source_id=source_id)
 
     def _materialize(self, cand: Belief, claim: str, source_id: str, *, surface: str) -> Belief:
-        return Belief.new(
+        return materialize(
+            cand,
             id=self._new_id(),
-            type=cand.type,
-            surface=surface,
             claim=claim,
+            surface=surface,
             step=self._step,
             source_id=source_id,
-            provenance=cand.provenance,
-            closed_set_items=cand.closed_set_items,
-            confidence=cand.confidence,
-            durability=cand.durability,
-            metadata=cand.metadata,
         )
 
     def _require(self, belief_id: str) -> Belief:

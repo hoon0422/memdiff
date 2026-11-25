@@ -9,9 +9,9 @@ import json
 import re
 from typing import Any
 
+from memdiff.adapters.llm.chat import ask
 from memdiff.llm.application.catalog import PromptCatalog
 from memdiff.llm.application.ports import ChatModel, EmbeddingModel
-from memdiff.llm.domain.messages import ChatMessage, ChatRequest
 from memdiff.llm.domain.prompt import PromptId
 from memdiff.memory.domain.belief import Belief, BeliefType, Provenance
 from memdiff.memory.domain.revision import RevisionDecision, RevisionOp
@@ -19,7 +19,6 @@ from memdiff.memory.domain.trajectory import Trajectory
 
 _VALID_BELIEF_TYPES = {bt.value for bt in BeliefType}
 _VALID_OPS = {op.value for op in RevisionOp if op is not RevisionOp.FORGET}
-_MAX_COMPLETION_TOKENS = 16384  # qwen3.5 thinks by default; keep room for `content`
 
 
 class LLMEmbedder:
@@ -106,15 +105,6 @@ def summarize_trajectory(trajectory: Trajectory, *, max_total_chars: int = 7000)
     return (header + "\n".join(parts))[:max_total_chars]
 
 
-def _ask(chat: ChatModel, system: str, user: str, *, model: str, think: bool | None) -> str:
-    return chat.complete(
-        [ChatMessage(role="system", content=system), ChatMessage(role="user", content=user)],
-        ChatRequest(
-            model=model, temperature=0.0, max_tokens=_MAX_COMPLETION_TOKENS, think=think
-        ),
-    ).text
-
-
 class LLMBeliefExtractor:
     def __init__(
         self,
@@ -135,7 +125,7 @@ class LLMBeliefExtractor:
         if outcome not in {"success", "failure"}:
             outcome = "unknown"
         digest = summarize_trajectory(trajectory, max_total_chars=self._max_total_chars)
-        raw = _ask(self._chat, self._system, digest, model=self._model, think=self._think)
+        raw = ask(self._chat, self._system, digest, model=self._model, think=self._think)
         parsed = _parse_json_object(raw)
         raw_items = parsed.get("beliefs") if parsed else None
         if not isinstance(raw_items, list):
@@ -227,7 +217,7 @@ class LLMBeliefReconciler:
         )
 
         parsed = _parse_json_object(
-            _ask(self._chat, self._system, user, model=self._model, think=self._think)
+            ask(self._chat, self._system, user, model=self._model, think=self._think)
         )
         if not parsed:
             return RevisionDecision(op=RevisionOp.ADD, reason="reconciler_parse_fallback")

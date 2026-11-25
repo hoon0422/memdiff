@@ -11,6 +11,7 @@ from memdiff.benchmarks.lmev2.application.runner import LMEV2BenchmarkRunner, LM
 from memdiff.bootstrap.container import build_container
 from memdiff.bootstrap.lmev2_provider import LMEV2Provider
 from memdiff.bootstrap.settings import get_settings
+from memdiff.presentation.cli.progress import TqdmProgress
 
 
 def main() -> None:
@@ -32,7 +33,9 @@ def main() -> None:
     run_id = args.run_id or f"lmev2_{args.domain}_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
     container = build_container(
         get_settings(),
-        LMEV2Provider(data_root=args.data_root, output_dir=args.runs_dir / run_id),
+        LMEV2Provider(
+            data_root=args.data_root, output_dir=args.runs_dir / run_id, progress=TqdmProgress()
+        ),
     )
     try:
         summary = container.get(LMEV2BenchmarkRunner).run(

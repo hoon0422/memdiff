@@ -12,8 +12,14 @@ import ast
 import json
 import re
 import zlib
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
+
+from dishka import Provider, Scope, provide
+from openai import OpenAI
+
+from memdiff.bootstrap.settings import Settings
 
 EMBED_DIMS = 32
 
@@ -209,3 +215,29 @@ class RecordingFakeSDK:
                 completion_tokens=len(text) // 4,
             ),
         )
+
+
+class FakeSDKProvider(Provider):
+    """Container override: every chat/embedding call goes to `sdk` instead of a real endpoint."""
+
+    scope = Scope.APP
+
+    def __init__(self, sdk: RecordingFakeSDK) -> None:
+        super().__init__()
+        self._sdk = sdk
+
+    @provide(override=True)
+    def sdk_client(self) -> OpenAI:
+        return self._sdk  # type: ignore[return-value]
+
+
+def fake_settings(tmp_path: Path) -> Settings:
+    """`.env`-independent settings pointing at nothing real; the LLM cache lives under `tmp_path`."""
+    return Settings(
+        _env_file=None,  # type: ignore[call-arg]
+        llm_base_url="http://127.0.0.1:11434/v1",
+        memdiff_cache_dir=tmp_path / "cache",
+        memdiff_chat_model="fake-chat",
+        memdiff_embedding_model="fake-embed",
+        memdiff_judge_model="fake-judge",
+    )

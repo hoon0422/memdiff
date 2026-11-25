@@ -11,22 +11,26 @@ from memdiff.memory.domain.trajectory import Trajectory
 from ._base import SteppedPolicy
 
 
-class NaiveRagPolicy(SteppedPolicy):
-    """Baseline 1: Append-only vector RAG over trajectory state chunks."""
+class RagPolicy(SteppedPolicy):
+    """Baselines 1 and 2: append-only vector RAG over trajectory state chunks.
 
-    policy_name = "naive_rag"
-    _recency_decay = 0.0
+    `naive_rag` is `recency_decay=0.0`; `recency_rag` weights scores by `exp(-decay * age)`.
+    """
 
     def __init__(
         self,
         *,
+        policy_name: str,
         chunks: ChunkRepository,
         embedder: Embedder,
         uow: UnitOfWork,
         new_id: Callable[[], str] = new_chunk_id,
+        recency_decay: float = 0.0,
         max_chunk_chars: int = 2400,
     ) -> None:
         super().__init__()
+        self.policy_name = policy_name
+        self._recency_decay = recency_decay
         self._chunks = chunks
         self._embedder = embedder
         self._uow = uow

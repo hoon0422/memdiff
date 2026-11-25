@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from contextlib import AbstractContextManager
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, SkipValidation
 
 from memdiff.audit.application.ports import AuditLogRepository
 from memdiff.audit.application.replay import ReplayService
@@ -26,12 +25,15 @@ class WorkspaceSpec(BaseModel):
     think: bool | None = None
 
 
-@dataclass(frozen=True)
-class MemoryWorkspace:
-    policy: MemoryPolicy
+class MemoryWorkspace(BaseModel):
+    """Handles over one open ledger. Fields are ports (Protocols), so pydantic only holds them."""
+
+    model_config = ConfigDict(frozen=True, arbitrary_types_allowed=True)
+
+    policy: SkipValidation[MemoryPolicy]
     # read handles over the same ledger, valid until the `with` exits
-    beliefs: BeliefRepository
-    log: AuditLogRepository
+    beliefs: SkipValidation[BeliefRepository]
+    log: SkipValidation[AuditLogRepository]
     replay: ReplayService  # build_bundle / state_at_step
 
 
