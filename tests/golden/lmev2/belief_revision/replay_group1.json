@@ -268,7 +268,22 @@
       "target_belief_id": null,
       "summary": "Consolidated evidence (#2) into b_0000000002 on Reports > Legacy",
       "details": {
-        "evidence_count": 2
+        "evidence_count": 2,
+        "previous": {
+          "claim": "Retracted: Legacy reports module was removed.",
+          "closed_set_items": [],
+          "confidence": 0.8,
+          "evidence_count": 1,
+          "provenance": [
+            {
+              "source_id": "traj_b",
+              "step_index": 1,
+              "url": null,
+              "outcome": "success",
+              "excerpt": "Legacy reports module was removed."
+            }
+          ]
+        }
       },
       "created_at_utc": "2026-01-01T00:00:06+00:00"
     },
