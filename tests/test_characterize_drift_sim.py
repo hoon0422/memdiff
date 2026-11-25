@@ -8,12 +8,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from fake_sdk import RecordingFakeSDK
-from snapshot_utils import assert_run_matches_golden
-
 from memdiff.benchmarks.drift_sim.runner import run_drift_sim_benchmark
 from memdiff.benchmarks.drift_sim.simulator import DriftSimConfig
 from memdiff.config import Settings
 from memdiff.llm.openai_client import CachedLLMClient
+from snapshot_utils import assert_run_matches_golden
 
 POLICIES = ["naive_rag", "recency_rag", "structured_extract", "belief_revision"]
 
