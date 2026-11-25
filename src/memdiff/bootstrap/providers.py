@@ -55,8 +55,7 @@ from memdiff.llm.application.ports import (
 from memdiff.llm.domain.usage import UsageStats
 from memdiff.memory.application.policies import (
     BeliefRevisionPolicy,
-    NaiveRagPolicy,
-    RecencyRagPolicy,
+    RagPolicy,
     StructuredExtractPolicy,
 )
 from memdiff.memory.application.policy import MemoryPolicy
@@ -228,11 +227,16 @@ class MemoryProvider(Provider):
     ) -> MemoryPolicy:
         match spec.policy_name:
             case "naive_rag":
-                return NaiveRagPolicy(
-                    chunks=chunks, embedder=embedder, uow=uow, max_chunk_chars=spec.max_chunk_chars
+                return RagPolicy(
+                    policy_name="naive_rag",
+                    chunks=chunks,
+                    embedder=embedder,
+                    uow=uow,
+                    max_chunk_chars=spec.max_chunk_chars,
                 )
             case "recency_rag":
-                return RecencyRagPolicy(
+                return RagPolicy(
+                    policy_name="recency_rag",
                     chunks=chunks,
                     embedder=embedder,
                     uow=uow,
