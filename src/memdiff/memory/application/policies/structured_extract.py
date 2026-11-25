@@ -11,12 +11,11 @@ from memdiff.memory.application.ports import (
     RevisionEventSink,
     UnitOfWork,
 )
-from memdiff.memory.domain.belief import Belief, new_belief_id
+from memdiff.memory.domain.belief import new_belief_id
 from memdiff.memory.domain.context import MemoryContextItem, MemoryStats
-from memdiff.memory.domain.revision import BeliefAdded
 from memdiff.memory.domain.trajectory import Trajectory
 
-from ._base import SteppedPolicy
+from ._base import SteppedPolicy, emit_added, materialize
 
 
 class StructuredExtractPolicy(SteppedPolicy):
@@ -51,30 +50,16 @@ class StructuredExtractPolicy(SteppedPolicy):
             return
         embeddings = self._embedder.embed([belief_embedding_text(b) for b in extracted])
         for cand, emb in zip(extracted, embeddings, strict=True):
-            belief = Belief.new(
+            belief = materialize(
+                cand,
                 id=self._new_id(),
-                type=cand.type,
-                surface=cand.surface,
                 claim=cand.claim,
+                surface=cand.surface,
                 step=self._step,
                 source_id=source_id,
-                provenance=cand.provenance,
-                closed_set_items=cand.closed_set_items,
-                confidence=cand.confidence,
-                durability=cand.durability,
-                metadata=cand.metadata,
             )
             self._beliefs.add(belief, emb)
-            self._events.emit(
-                BeliefAdded(
-                    step=self._step,
-                    source_id=source_id,
-                    belief_id=belief.id,
-                    belief_type=belief.type,
-                    surface=belief.surface,
-                    claim=belief.claim,
-                )
-            )
+            emit_added(self._events, belief, step=self._step, source_id=source_id)
         self._uow.commit()
 
     def query(
