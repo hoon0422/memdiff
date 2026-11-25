@@ -1,6 +1,6 @@
 """Fake OpenAI-compatible SDK for characterization tests.
 
-Plugs into `CachedLLMClient(client=...)`: records every chat/embedding request in order and
+Plugs into the container (`FakeSDKProvider` override of `OpenAI`): records every chat/embedding request in order and
 answers deterministically per role (extractor / reconciler / reader / judge), keyed off the
 request content. Roles are detected from the system prompt, so a changed prompt that no longer
 matches a role fails loudly instead of silently getting a canned answer.
@@ -178,7 +178,7 @@ _ANSWERERS = {
 
 
 class RecordingFakeSDK:
-    """Drop-in for the `openai.OpenAI` client surface used by `CachedLLMClient`."""
+    """Drop-in for the `openai.OpenAI` client surface used by `OpenAIChatModel` and `OpenAIEmbeddingModel`."""
 
     def __init__(self) -> None:
         self.requests: list[dict[str, Any]] = []

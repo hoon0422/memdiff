@@ -59,3 +59,29 @@ def test_unparseable_judge_reply_raises() -> None:
     scorer, _ = _scorer("???")
     with pytest.raises(ValueError):
         scorer.score("llm_abstention_checker", "r", "p", _q())
+
+
+def test_full_spec_strings_dispatch_to_the_deterministic_matchers() -> None:
+    scorer, chat = _scorer("")
+
+    def eval_from_spec(spec: str, prediction: str, answer: str) -> bool:
+        return scorer.score(spec, prediction, prediction, _q(answer))
+
+    assert eval_from_spec(
+        "norm_phrase_set_match|lower=true|normalize_hyphen=true|strip_punct=true|separators=,;|require_non_empty=true",
+        "My Open Incidents, Incident Mobile, and Incident Portal",
+        "Incident Mobile, Incident Portal, My Open Incidents",
+    )
+    assert eval_from_spec(
+        "norm_phrase_set_match_ordered|lower=true|normalize_hyphen=true|strip_punct=true|separators=;|require_non_empty=true",
+        "First open Reports, then click Problems",
+        "Reports;Problems",
+    )
+    assert not eval_from_spec(
+        "norm_phrase_set_match_ordered|lower=true|normalize_hyphen=true|strip_punct=true|separators=;|require_non_empty=true",
+        "First open Problems, then Reports",
+        "Reports;Problems",
+    )
+    assert eval_from_spec("mc_choice_match|require_non_empty=true", "Option C.", "C")
+    assert eval_from_spec("mc_choice_set_match|require_non_empty=true", "Choices A and C", "CA")
+    assert not chat.calls

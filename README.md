@@ -25,13 +25,17 @@ MemDiff treats agent memory as a versioned **Belief Ledger** rather than an appe
 ```text
 memdiff/
 ├── src/memdiff/
-│   ├── core/            # Belief schemas, SQLite+vector BeliefStore, MemoryPolicy protocol
-│   ├── policies/        # 4 matched-budget memory policies
-│   ├── llm/             # OpenAI client with disk caching & token/cost accounting
+│   ├── memory/          # Beliefs, 4 matched-budget policies, ports (domain/ + application/)
+│   ├── llm/             # Chat/embedding ports, caching decorators, prompt catalog
+│   ├── audit/           # Revision timeline, time-travel reconstruction, replay bundle
 │   ├── benchmarks/
-│   │   ├── lmev2/       # LongMemEval-V2 loader, official metrics port, streaming fetcher
-│   │   └── drift_sim/   # Deterministic temporal contradiction simulator
-│   └── export/          # Static JSON replay bundle exporter for the web UI
+│   │   ├── common/      # Answer helpers and workspace factory port shared by both tracks
+│   │   ├── lmev2/       # LongMemEval-V2 dataset, official scoring port, runner
+│   │   └── drift_sim/   # Deterministic temporal contradiction simulator and runner
+│   ├── adapters/        # SQLAlchemy ledger/cache, OpenAI SDK, files, HTTP fetch, numpy index
+│   ├── presentation/    # argparse CLIs behind scripts/
+│   └── bootstrap/       # dishka composition root and settings
+├── prompts/             # Every LLM prompt as a Markdown template
 ├── scripts/             # CLI utilities (data fetch, eval runners)
 ├── tests/               # Deterministic pytest suite
 └── web/                 # React + TypeScript + Vite "Memory Time Machine" UI

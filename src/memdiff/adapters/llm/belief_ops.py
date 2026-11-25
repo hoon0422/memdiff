@@ -1,6 +1,6 @@
 """LLM-backed `Embedder`, `BeliefExtractor` and `BeliefReconciler` over the `ChatModel` ports.
 
-Request bytes must stay identical to the legacy `llm_ops` (they are pinned by the #2 goldens).
+Request bytes must stay identical to the pre-refactor extractor and reconciler (pinned by the goldens in tests/golden).
 """
 
 from __future__ import annotations

@@ -87,3 +87,16 @@ def test_parse_binary_judgement() -> None:
 
 def test_aggregate_empty() -> None:
     assert aggregate_metrics([]) == {"overall": {"count_all_questions": 0}}
+
+
+def test_aggregate_metrics_breakdown() -> None:
+    records = [
+        {"category": "static", "is_abstention_problem": False, "score_bool": True, "is_unknown": False},
+        {"category": "static", "is_abstention_problem": False, "score_bool": False, "is_unknown": True},
+        {"category": "dynamic-abs", "is_abstention_problem": True, "score_bool": True, "is_unknown": False},
+    ]
+    agg = aggregate_metrics(records)
+    assert agg["overall"]["count_all_questions"] == 3
+    assert agg["non_abstention_by_category"]["static"]["pct_correct"] == 0.5
+    assert agg["non_abstention_by_category"]["static"]["pct_unknown"] == 0.5
+    assert agg["abstention_by_category"]["dynamic-abs"]["pct_correct"] == 1.0

@@ -94,7 +94,7 @@ def _stringify_nulls(item: Any, keys: tuple[str, ...]) -> Any:
 def trajectory_from_record(record: Mapping[str, Any]) -> Trajectory:
     """Raw jsonl record -> `Trajectory`, keeping the old raw-dict semantics.
 
-    The legacy policies did `str(record.get("outcome", "unknown"))`, so a key that is present
+    The pre-refactor policies did `str(record.get("outcome", "unknown"))`, so a key that is present
     with a null value rendered as "None" (real LME-V2 data has null outcomes), while `Trajectory`
     rejects None. Stringify explicit nulls on the fields the policies print.
     """

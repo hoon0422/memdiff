@@ -1,4 +1,4 @@
-"""SQLAlchemy ledger + numpy index vs the in-memory fakes' contract and the legacy BeliefStore."""
+"""SQLAlchemy ledger + numpy index: search ranking, transactions, schema and lifecycle."""
 
 from __future__ import annotations
 
@@ -16,8 +16,6 @@ from memdiff.adapters.persistence.sqlalchemy.ledger import (
 from memdiff.audit.application.recorder import RevisionAuditRecorder
 from memdiff.audit.application.replay import ReplayService
 from memdiff.audit.domain.timeline import BeliefEdge, TimelineEvent
-from memdiff.core.models import BeliefType as LegacyType
-from memdiff.core.store import BeliefStore
 from memdiff.memory.application.policies import BeliefRevisionPolicy
 from memdiff.memory.domain.belief import Belief, BeliefStatus, BeliefType, Provenance
 from memdiff.memory.domain.chunk import Chunk
@@ -64,7 +62,7 @@ def _unit(vals: list[float]) -> np.ndarray:
     return arr / np.linalg.norm(arr)
 
 
-# ── belief search parity with the legacy store ────────────────────────────────────────────
+# ── search ranking (expected values recorded from the pre-refactor store) ─────────────
 
 
 def _vectors() -> list[list[float]]:
@@ -75,33 +73,68 @@ def _vectors() -> list[list[float]]:
     return vecs
 
 
-def _fill_beliefs(ledger: Ledger, legacy: BeliefStore) -> None:
+QUERIES = [[1.0, 0.2, -0.3], [0.1, 0.9, 0.4, 0.0], [0.0, 0.0, 0.0], []]
+
+BELIEF_EXPECTED: dict[tuple[bool, float, int], list[tuple[str, float]]] = {
+    (True, -1.0, 0): [('b5', 0.335423),
+                   ('b6', 0.332287),
+                   ('b0', 0.332287),
+                   ('b2', 0.313253),
+                   ('b3', -0.682826)],
+ (True, -1.0, 1): [('b8', 0.137934), ('b7', -0.713863)],
+ (True, -1.0, 2): [('b6', 0.0), ('b5', 0.0), ('b3', 0.0), ('b2', 0.0), ('b0', 0.0)],
+ (True, -1.0, 3): [],
+ (True, 0.0, 0): [('b5', 0.335423), ('b6', 0.332287), ('b0', 0.332287), ('b2', 0.313253)],
+ (True, 0.0, 1): [('b8', 0.137934)],
+ (True, 0.0, 2): [('b6', 0.0), ('b5', 0.0), ('b3', 0.0), ('b2', 0.0), ('b0', 0.0)],
+ (True, 0.0, 3): [],
+ (True, 0.5, 0): [],
+ (True, 0.5, 1): [],
+ (True, 0.5, 2): [],
+ (True, 0.5, 3): [],
+ (False, -1.0, 0): [('b5', 0.335423),
+                    ('b6', 0.332287),
+                    ('b0', 0.332287),
+                    ('b2', 0.313253),
+                    ('b4', -0.072199)],
+ (False, -1.0, 1): [('b8', 0.137934), ('b7', -0.713863)],
+ (False, -1.0, 2): [('b6', 0.0), ('b5', 0.0), ('b4', 0.0), ('b3', 0.0), ('b2', 0.0)],
+ (False, -1.0, 3): [],
+ (False, 0.0, 0): [('b5', 0.335423), ('b6', 0.332287), ('b0', 0.332287), ('b2', 0.313253)],
+ (False, 0.0, 1): [('b8', 0.137934)],
+ (False, 0.0, 2): [('b6', 0.0), ('b5', 0.0), ('b4', 0.0), ('b3', 0.0), ('b2', 0.0)],
+ (False, 0.0, 3): [],
+ (False, 0.5, 0): [],
+ (False, 0.5, 1): [],
+ (False, 0.5, 2): [],
+ (False, 0.5, 3): []}
+CHUNK_EXPECTED: dict[tuple[float, int], list[tuple[str, float]]] = {(0.0, 0): [('c5', 0.335423), ('c6', 0.332287), ('c0', 0.332287), ('c2', 0.313253)],
+ (0.0, 1): [('c8', 0.137934), ('c7', -0.713863)],
+ (0.3, 0): [('c6', 0.332287), ('c5', 0.248488), ('c2', 0.171917), ('c0', 0.135098)],
+ (0.3, 1): [('c8', 0.137934), ('c7', -0.528843)]}
+
+
+def _fill_beliefs(ledger: Ledger) -> None:
     for n, vec in enumerate(_vectors()):
-        bid = f"b{n}"
-        ledger.beliefs.add(_belief(bid), vec)
-        legacy.add_belief(
-            belief_type=LegacyType.DYNAMIC_STATE, surface="s", claim=f"claim {bid}", step=1,
-            source_id="src", embedding=vec, belief_id=bid,
-        )
+        ledger.beliefs.add(_belief(f"b{n}"), vec)
     for bid in ("b1", "b4"):
         old = ledger.beliefs.get(bid)
         assert old is not None
         ledger.beliefs.update(old.mark_refuted(step=2))
-        legacy.refute_belief(belief_id=bid, step=2, source_id="src", reason="r")
     ledger.uow.commit()
 
 
 @pytest.mark.parametrize("active_only", [True, False])
 @pytest.mark.parametrize("min_score", [-1.0, 0.0, 0.5])
-@pytest.mark.parametrize("query", [[1.0, 0.2, -0.3], [0.1, 0.9, 0.4, 0.0], [0.0, 0.0, 0.0], []])
-def test_belief_search_matches_legacy_store(ledger, active_only, min_score, query) -> None:  # type: ignore[no-untyped-def]
-    with BeliefStore(":memory:") as legacy:
-        _fill_beliefs(ledger, legacy)
-        want = legacy.search_beliefs(query, top_k=5, active_only=active_only, min_score=min_score)
-        got = ledger.beliefs.search(
-            query, top_k=5, active_only=active_only, min_score=min_score
-        )
-    assert [(b.id, s) for b, s in got] == [(b.id, s) for b, s in want]
+@pytest.mark.parametrize("query_index", range(len(QUERIES)))
+def test_belief_search_ranking(ledger, active_only, min_score, query_index) -> None:  # type: ignore[no-untyped-def]
+    _fill_beliefs(ledger)
+    got = ledger.beliefs.search(
+        QUERIES[query_index], top_k=5, active_only=active_only, min_score=min_score
+    )
+    assert [(b.id, pytest.approx(s, abs=1e-6)) for b, s in got] == BELIEF_EXPECTED[
+        (active_only, min_score, query_index)
+    ]
     assert [b for b, _ in got] == [Belief.model_validate(b.model_dump()) for b, _ in got]
 
 
@@ -153,31 +186,24 @@ def test_list_beliefs_filters_and_orders(ledger) -> None:  # type: ignore[no-unt
     assert [b.id for b in ledger.beliefs.list_beliefs(surface="nope")] == []
 
 
-# ── chunk search parity ───────────────────────────────────────────────────────────────────
+# ── chunk search ──────────────────────────────────────────────────────────────────────────
 
 
 @pytest.mark.parametrize("decay", [0.0, 0.3])
-@pytest.mark.parametrize("query", [[1.0, 0.2, -0.3], [0.1, 0.9, 0.4, 0.0]])
-def test_chunk_search_matches_legacy_store(ledger, decay, query) -> None:  # type: ignore[no-untyped-def]
-    with BeliefStore(":memory:") as legacy:
-        for n, vec in enumerate(_vectors()):
-            cid = f"c{n}"
-            meta = {"n": n, "t": "é"}
-            ledger.chunks.add(
-                Chunk(id=cid, source_id="s", step=n // 2, state_index=n, text=f"t{n}", metadata=meta),
-                vec,
-            )
-            legacy.add_chunk(
-                source_id="s", step=n // 2, text=f"t{n}", state_index=n, metadata=meta,
-                embedding=vec, chunk_id=cid,
-            )
-        ledger.chunks.add(Chunk(id="noemb", source_id="s", step=9, text="x"), None)
-        legacy.add_chunk(source_id="s", step=9, text="x", chunk_id="noemb")
-        ledger.uow.commit()
-        want = legacy.search_chunks(query, top_k=4, recency_decay=decay)
-        got = ledger.chunks.search(query, top_k=4, recency_decay=decay)
-        assert ledger.chunks.count() == 10
-    assert [(c.model_dump(), s) for c, s in got] == [(w, s) for w, s in want]
+@pytest.mark.parametrize("query_index", [0, 1])
+def test_chunk_search_ranking(ledger, decay, query_index) -> None:  # type: ignore[no-untyped-def]
+    for n, vec in enumerate(_vectors()):
+        meta = {"n": n, "t": "é"}
+        ledger.chunks.add(
+            Chunk(id=f"c{n}", source_id="s", step=n // 2, state_index=n, text=f"t{n}", metadata=meta),
+            vec,
+        )
+    ledger.chunks.add(Chunk(id="noemb", source_id="s", step=9, text="x"), None)
+    ledger.uow.commit()
+    got = ledger.chunks.search(QUERIES[query_index], top_k=4, recency_decay=decay)
+    assert ledger.chunks.count() == 10
+    assert [(c.id, pytest.approx(s, abs=1e-6)) for c, s in got] == CHUNK_EXPECTED[(decay, query_index)]
+    assert got[0][0].metadata["t"] == "é"
 
 
 def test_chunk_search_sees_new_chunk(ledger) -> None:  # type: ignore[no-untyped-def]
@@ -252,7 +278,7 @@ def test_commit_persists_and_file_db_reopens(tmp_path) -> None:  # type: ignore[
         again.close()
 
 
-def test_schema_keeps_legacy_table_and_column_names(ledger) -> None:  # type: ignore[no-untyped-def]
+def test_schema_table_and_column_names(ledger) -> None:  # type: ignore[no-untyped-def]
     insp = inspect(ledger.engine)
     cols = {t: [c["name"] for c in insp.get_columns(t)] for t in insp.get_table_names()}
     assert cols["timeline_events"] == [

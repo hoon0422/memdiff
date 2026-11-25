@@ -4,6 +4,23 @@
 root_package = memdiff
 include_external_packages = True
 
+# ── whole package: outer layers may import inner ones, never the reverse ─────────────────
+# Every top-level subpackage must be listed (exhaustive), so a new one can't dodge the rules.
+[importlinter:contract:layers-package]
+name = package: presentation -> bootstrap -> adapters -> benchmarks -> audit -> memory -> llm
+type = layers
+containers =
+    memdiff
+exhaustive = True
+layers =
+    presentation
+    bootstrap
+    adapters
+    benchmarks
+    audit
+    memory
+    llm
+
 # ── layers: application may import domain, never the reverse ─────────────────────────────
 [importlinter:contract:layers-llm]
 name = llm: application -> domain

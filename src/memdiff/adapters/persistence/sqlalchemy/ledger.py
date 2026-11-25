@@ -22,7 +22,7 @@ from memdiff.memory.domain.belief import Belief, BeliefStatus, BeliefType, Prove
 from memdiff.memory.domain.chunk import Chunk
 from memdiff.memory.domain.revision import RevisionOp
 
-# Insertion order (SQLite rowid) reproduces the legacy store's tie-breaking between equal scores.
+# Insertion order (SQLite rowid) reproduces the pre-refactor store's tie-breaking between equal scores.
 _ROWID = text("rowid")
 
 

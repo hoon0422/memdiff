@@ -1,4 +1,4 @@
-"""Context-string formatting. Output must stay byte-identical to the legacy policies."""
+"""Context-string formatting. Output must stay byte-identical to the pre-refactor policies (pinned by the goldens)."""
 
 from __future__ import annotations
 

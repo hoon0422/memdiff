@@ -13,7 +13,7 @@ from dishka import Provider
 
 from memdiff.adapters.replay.json_file import JsonFileReplayWriter
 from memdiff.benchmarks.common.application.workspace import MemoryWorkspaceFactory, WorkspaceSpec
-from memdiff.benchmarks.drift_sim.simulator import DriftSimConfig, generate_episode
+from memdiff.benchmarks.drift_sim.domain.episode import DriftSimConfig, generate_episode
 from memdiff.bootstrap.container import build_container
 from memdiff.bootstrap.providers import OfflineProvider
 from memdiff.bootstrap.settings import get_settings

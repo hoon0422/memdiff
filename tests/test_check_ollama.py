@@ -56,3 +56,12 @@ def test_unreachable_exits_1_with_tunnel_hint(capsys: pytest.CaptureFixture[str]
     out = capsys.readouterr().out
     assert "[ERROR] Could not reach Ollama at http://127.0.0.1:11434: boom" in out
     assert "ssh -fN -L 11434:127.0.0.1:11434 <gpu-host>" in out
+
+
+def test_help_exits_zero_without_contacting_ollama(capsys: pytest.CaptureFixture[str]) -> None:
+    from memdiff.presentation.cli.check_ollama import main
+
+    with pytest.raises(SystemExit) as exc:
+        main(["--help"])
+    assert exc.value.code == 0
+    assert "Ollama" in capsys.readouterr().out

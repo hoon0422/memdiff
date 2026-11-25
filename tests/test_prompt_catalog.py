@@ -3,37 +3,37 @@ from __future__ import annotations
 import shutil
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any
 
 import pytest
 
+from memdiff.adapters.llm.belief_ops import LLMBeliefExtractor, LLMBeliefReconciler
+from memdiff.adapters.llm.drift_reader import LLMDriftReader
 from memdiff.adapters.llm.judges import build_judges
 from memdiff.adapters.llm.lmev2_reader import LMEV2Reader
-from memdiff.benchmarks.drift_sim.runner import _answer_drift_query
-from memdiff.benchmarks.drift_sim.simulator import DriftQuery
 from memdiff.benchmarks.lmev2.domain.dataset import LMEV2Question
 from memdiff.bootstrap.container import build_container
 from memdiff.bootstrap.settings import Settings
-from memdiff.core.models import Belief, BeliefType
 from memdiff.llm.application.catalog import PromptCatalog
 from memdiff.llm.domain.messages import ChatCompletion, ChatMessage, ChatRequest
 from memdiff.llm.domain.prompt import PromptError, PromptId
+from memdiff.memory.domain.belief import Belief, BeliefType
 from memdiff.memory.domain.context import MemoryContextItem
-from memdiff.policies.llm_ops import make_llm_extractor, make_llm_reconciler
+from memdiff.memory.domain.trajectory import Trajectory
 
 REPO_PROMPTS = Path(__file__).resolve().parents[1] / "prompts"
 
 
-class _RecordingClient:
-    """Stands in for CachedLLMClient: records the messages the real code builds."""
+class _RecordingChat:
+    """A `ChatModel` that records what the adapter sends."""
 
     def __init__(self, reply: str) -> None:
         self.reply = reply
-        self.messages: list[dict[str, Any]] = []
+        self.messages: list[ChatMessage] = []
+        self.request: ChatRequest | None = None
 
-    def chat(self, messages: list[dict[str, Any]], **_: Any) -> str:
-        self.messages = messages
-        return self.reply
+    def complete(self, messages: list[ChatMessage], request: ChatRequest) -> ChatCompletion:
+        self.messages, self.request = messages, request
+        return ChatCompletion(text=self.reply)
 
 
 @pytest.fixture
@@ -69,57 +69,40 @@ def test_every_prompt_id_has_a_md_file_under_root_prompts() -> None:
     }
 
 
-def test_extractor_and_reconciler_prompts_match_code(catalog: PromptCatalog) -> None:
-    ext = _RecordingClient('{"beliefs": []}')
-    make_llm_extractor(ext)({"id": "t1", "task": "x", "steps": []}, 0)  # type: ignore[arg-type]
-    assert ext.messages[0]["content"] == catalog.render(PromptId.EXTRACTOR_SYSTEM)
+def test_extractor_and_reconciler_prompts_match_catalog(catalog: PromptCatalog) -> None:
+    ext = _RecordingChat('{"beliefs": []}')
+    LLMBeliefExtractor(ext, catalog, model="m").extract(
+        Trajectory.model_validate({"id": "t1", "goal": "x", "states": []}), 0
+    )
+    assert ext.messages[0].content == catalog.render(PromptId.EXTRACTOR_SYSTEM)
 
-    rec = _RecordingClient('{"op": "ADD", "reason": "r"}')
+    rec = _RecordingChat('{"op": "ADD", "reason": "r"}')
     cand = _belief("b_new", "svc.region", "region is eu-west-1")
     old = _belief("b_old", "svc.region", "region is us-east-1", ["us-east-1", "eu-west-1"])
-    make_llm_reconciler(rec)(cand, [(old, 0.9)])  # type: ignore[arg-type]
-    assert rec.messages[0]["content"] == catalog.render(PromptId.RECONCILER_SYSTEM)
+    LLMBeliefReconciler(rec, catalog, model="m").decide(cand, [(old, 0.9)])
+    assert rec.messages[0].content == catalog.render(PromptId.RECONCILER_SYSTEM)
     candidate = "- type=dynamic_state | surface=svc.region | step=3 | claim=region is eu-west-1"
     neighbors = (
         "- id=b_old | sim=0.900 | type=dynamic_state | surface=svc.region | step=3 | "
         "claim=region is us-east-1 | closed_set=['us-east-1', 'eu-west-1']"
     )
-    assert rec.messages[1]["content"] == catalog.render(
+    assert rec.messages[1].content == catalog.render(
         PromptId.RECONCILER_USER, candidate=candidate, neighbors=neighbors
     )
-    assert rec.messages[1]["content"] == (
+    assert rec.messages[1].content == (
         f"NEW CANDIDATE BELIEF:\n{candidate}\n\nEXISTING ACTIVE BELIEFS:\n{neighbors}"
     )
 
 
-def test_drift_reader_prompts_match_code(catalog: PromptCatalog) -> None:
-    client = _RecordingClient("\\boxed{x}")
-    query = DriftQuery(
-        id="q1",
-        query_type="dynamic_state",
-        entity="svc",
-        question="Which region is svc in?",
-        gold_answer="eu-west-1",
-        stale_answers=["us-east-1"],
+def test_drift_reader_prompts_match_catalog(catalog: PromptCatalog) -> None:
+    chat = _RecordingChat("\\boxed{x}")
+    LLMDriftReader(chat, catalog, model="m").answer(
+        "Which region is svc in?", ["note A"], think=None
     )
-    _answer_drift_query(client, query, [{"type": "text", "value": "note A"}])  # type: ignore[arg-type]
-    assert client.messages[0]["content"] == catalog.render(PromptId.DRIFT_READER_SYSTEM)
-    assert client.messages[1]["content"] == catalog.render(
+    assert chat.messages[0].content == catalog.render(PromptId.DRIFT_READER_SYSTEM)
+    assert chat.messages[1].content == catalog.render(
         PromptId.DRIFT_READER_USER, memory="note A", question="Which region is svc in?"
     )
-
-
-class _RecordingChat:
-    """A `ChatModel` that records what the adapter sends."""
-
-    def __init__(self, reply: str) -> None:
-        self.reply = reply
-        self.messages: list[ChatMessage] = []
-        self.request: ChatRequest | None = None
-
-    def complete(self, messages: list[ChatMessage], request: ChatRequest) -> ChatCompletion:
-        self.messages, self.request = messages, request
-        return ChatCompletion(text=self.reply)
 
 
 @pytest.mark.parametrize(

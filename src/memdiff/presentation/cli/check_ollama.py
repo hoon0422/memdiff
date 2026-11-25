@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import argparse
+
 from memdiff.bootstrap.container import build_container
 from memdiff.bootstrap.settings import Settings, get_settings
 from memdiff.llm.application.ports import ModelLister
@@ -44,7 +46,8 @@ def run_check(settings: Settings, lister: ModelLister) -> int:
     return 0
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    argparse.ArgumentParser(description=__doc__).parse_args(argv)
     settings = get_settings()
     container = build_container(settings)
     try:
