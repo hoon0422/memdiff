@@ -128,3 +128,16 @@ source_modules =
     memdiff.benchmarks.drift_sim
 forbidden_modules =
     memdiff.benchmarks.lmev2
+
+# ── adapters.vector (numpy index) is reachable only from adapters and bootstrap ──────────
+[importlinter:contract:vector-index-adapters-only]
+name = adapters.vector: imported only from adapters and bootstrap
+type = forbidden
+source_modules =
+    memdiff.memory
+    memdiff.audit
+    memdiff.llm
+    memdiff.benchmarks
+    memdiff.presentation
+forbidden_modules =
+    memdiff.adapters.vector
