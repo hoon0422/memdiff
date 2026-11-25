@@ -11,13 +11,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from memdiff.benchmarks.common.domain.answer import extract_boxed_answer, norm_phrase_set_match
 from memdiff.benchmarks.drift_sim.simulator import (
     DriftEpisode,
     DriftQuery,
     DriftSimConfig,
     generate_episode,
 )
-from memdiff.benchmarks.lmev2.metrics import extract_boxed_answer, norm_phrase_set_match
 from memdiff.config import Settings, get_settings
 from memdiff.core.models import MemoryContextItem, ReplayQuestionComparison
 from memdiff.core.protocol import MemoryPolicy

@@ -15,18 +15,15 @@ from typing import Any
 
 from tqdm import tqdm
 
+from memdiff.benchmarks.common.domain.answer import extract_boxed_answer, is_unknown
+from memdiff.benchmarks.lmev2.application.scorer import Scorer
+from memdiff.benchmarks.lmev2.domain.scoring.aggregate import aggregate_metrics
+from memdiff.benchmarks.lmev2.domain.scoring.categories import CATEGORY_MAP
 from memdiff.benchmarks.lmev2.loader import (
     LMEV2Question,
     load_haystack,
     load_questions,
     load_trajectories,
-)
-from memdiff.benchmarks.lmev2.metrics import (
-    CATEGORY_MAP,
-    aggregate_metrics,
-    eval_from_spec,
-    extract_boxed_answer,
-    is_unknown,
 )
 from memdiff.config import Settings, get_settings
 from memdiff.core.models import MemoryContextItem
@@ -187,6 +184,7 @@ def run_lmev2_policy(
     cfg = settings or get_settings()
     owns_client = client is None
     llm = client or CachedLLMClient(cfg)
+    scorer = Scorer(llm, judge_model=cfg.memdiff_judge_model)
 
     questions = load_questions(data_root, domain=domain)
     if balanced_per_type is not None:
@@ -271,19 +269,7 @@ def run_lmev2_policy(
                     is_abst = q.question_type.endswith("-abs")
                     category = CATEGORY_MAP.get(q.question_type, q.question_type)
 
-                    eval_name = q.eval_function.split("|", 1)[0].strip()
-                    if eval_name in {"llm_abstention_checker", "llm_gotchas_checker"}:
-                        score_bool = eval_from_spec(
-                            q.eval_function,
-                            raw_resp,
-                            q.answer,
-                            question_text=q.question,
-                            parsed_prediction=parsed,
-                            llm_client=llm,
-                            judge_model=cfg.memdiff_judge_model,
-                        )
-                    else:
-                        score_bool = eval_from_spec(q.eval_function, parsed, q.answer)
+                    score_bool = scorer.score(q.eval_function, raw_resp, parsed, q)
 
                     records.append(
                         {
