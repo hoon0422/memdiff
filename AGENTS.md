@@ -26,6 +26,7 @@ MemDiff is a provenance- and belief-revision-aware agent memory engine evaluated
 
 ## Context Pointers
 
+- `manual/` is a scratch board of human-facing explanations (code map, DB schema, run guide). It may be outdated, so don't treat it as a source of truth: verify against the code. Don't update it unless the user asks.
 - Modifying belief lifecycle, SQLite storage, or time-travel replay → read `src/memdiff/core/models.py`, `src/memdiff/core/store.py`, and `tests/test_store.py`.
 - Tuning extraction/reconciliation prompts or adding a policy → read `src/memdiff/policies/belief_revision.py` and `src/memdiff/policies/llm_ops.py`.
 - Changing LongMemEval-V2 scoring, prompting, or dataset loading → read `src/memdiff/benchmarks/lmev2/metrics.py` and `src/memdiff/benchmarks/lmev2/runner.py`.

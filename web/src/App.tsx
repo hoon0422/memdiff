@@ -15,8 +15,19 @@ function computeStatusAtStep(bundle: ReplayBundle, belief: Belief, step: number)
 }
 
 export function App() {
-  const [bundle] = useState<ReplayBundle>(SAMPLE_REPLAY);
+  const [bundle, setBundle] = useState<ReplayBundle>(SAMPLE_REPLAY);
   const [step, setStep] = useState<number>(bundle.total_steps);
+
+  async function loadReplayFile(file: File | undefined) {
+    if (!file) return;
+    try {
+      const loaded = JSON.parse(await file.text()) as ReplayBundle;
+      setBundle(loaded);
+      setStep(loaded.total_steps);
+    } catch (err) {
+      alert(`Could not read replay JSON: ${err}`);
+    }
+  }
 
   const visibleBeliefs = useMemo(() => {
     return bundle.beliefs
@@ -38,8 +49,12 @@ export function App() {
             Run: <code>{bundle.run_id}</code> · Benchmark: <code>{bundle.benchmark}</code>
           </p>
         </div>
-        <div style={{ fontSize: 14, fontWeight: 600 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, textAlign: "right" }}>
           Session {step} / {bundle.total_steps}
+          <label style={{ display: "block", marginTop: 6, fontSize: 12, fontWeight: 400 }}>
+            Load replay JSON:{" "}
+            <input type="file" accept=".json,application/json" onChange={(e) => loadReplayFile(e.target.files?.[0])} />
+          </label>
         </div>
       </header>
 

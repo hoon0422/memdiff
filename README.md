@@ -37,6 +37,12 @@ memdiff/
 └── web/                 # React + TypeScript + Vite "Memory Time Machine" UI
 ```
 
+## Manual (may be outdated)
+
+- [manual/GETTING_STARTED.md](manual/GETTING_STARTED.md) — try the engine hands-on (offline demo → live LLM → small benchmark runs)
+- [manual/CODE_MAP.md](manual/CODE_MAP.md) — which class/function does what, and the insert/query data flow
+- [manual/DATABASE.md](manual/DATABASE.md) — SQLite ledger tables, embedding storage, LLM cache
+
 ## Quickstart
 
 ### 1. Python Engine & Local Ollama (`uv`)
@@ -45,6 +51,7 @@ uv sync
 cp .env.example .env
 uv run python scripts/check_ollama.py  # verifies Ollama connectivity & pulled models
 uv run pytest
+uv run python scripts/demo_memory.py  # offline demo, no LLM needed
 ```
 
 **Local / Remote GPU Ollama setup (12GB VRAM-friendly):**
