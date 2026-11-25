@@ -1,0 +1,201 @@
+[
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory traj_b | outcome=success | step=0]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee; Category",
+        "[Trajectory traj_b | outcome=success | step=1]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/reports\nAction: click('Reports')\n[RETRACT Reports > Legacy] Legacy reports module was removed.",
+        "[Trajectory traj_b | outcome=success | step=2]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/change_request\nAction: select('Risk','Moderate')\n[ERROR Change Request > Save] Set Risk to Moderate before Save; the save then succeeds.",
+        "[Trajectory traj_b | outcome=success | step=3]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident\nAction: click('Resolve')\n[SURFACE Incident > Resolve] options: Resolve; Close",
+        "[Trajectory traj_b | outcome=success | step=4]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident\nAction: click('Resolve')\n[STATE UPDATE] Incident INC0001 state changed from In Progress to Resolved after clicking Resolve."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 0
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory traj_a | outcome=failure | step=0]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee",
+        "[Trajectory traj_a | outcome=failure | step=1]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/reports\nAction: click('Reports')\n[SURFACE Reports > Legacy] options: Summary; Export",
+        "[Trajectory traj_a | outcome=failure | step=2]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/change_request\nAction: click('Save')\n[ERROR Change Request > Save] Save is rejected silently when Risk is empty.",
+        "[Trajectory traj_a | outcome=failure | step=3]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/incident\nAction: click('Resolve')\n[SURFACE Incident > Resolve] options: Resolve; Close",
+        "[Trajectory traj_a | outcome=failure | step=4]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/home\nAction: <none>\n[TEMP] Banner: maintenance window scheduled for build #4821."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 1
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Why does saving a change request fail silently and how can it be avoided?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 2
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory traj_a | outcome=failure | step=2]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/change_request\nAction: click('Save')\n[ERROR Change Request > Save] Save is rejected silently when Risk is empty.\n\n---\n\n[Trajectory traj_b | outcome=success | step=2]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/change_request\nAction: select('Risk','Moderate')\n[ERROR Change Request > Save] Set Risk to Moderate before Save; the save then succeeds.\n\n---\n\n[Trajectory traj_b | outcome=success | step=0]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee; Category\n\nQuestion:\nWhy does saving a change request fail silently and how can it be avoided?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 3
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are a strict grader for gotchas-style insight questions. The reference answer describes the key insight(s). Grade 1 if the model response includes at least one correct insight point from the reference answer (paraphrase allowed), and does not contradict any reference point. If the model's direction is wrong, or it contains contradictions against any reference point, grade 0. If the model gives multiple points, partial coverage is enough for 1 as long as no contradictions appear.",
+          "role": "system"
+        },
+        {
+          "content": "Evaluate whether the model answer captures the gotcha insight.\n\nQuestion:\nWhy does saving a change request fail silently and how can it be avoided?\n\nReference answer (insight points):\nSet the Risk field to Moderate before saving; saving is rejected when Risk is empty.\n\nModel full response:\n\\boxed{Goal: Create a change request for the web tier}\n\nModel extracted final answer:\nGoal: Create a change request for the web tier\n\nScoring rubric:\n- Label 1 if the model includes at least one correct insight point from the reference answer (paraphrase acceptable) without contradicting any reference point.\n- Label 0 if direction is wrong, contradictory, or generic without insight.\n\nOutput JSON only:\n{\"label\": 0 or 1, \"reason\": \"short rationale\"}",
+          "role": "user"
+        }
+      ],
+      "model": "fake-judge",
+      "temperature": 0.0
+    },
+    "role": "judge_gotchas",
+    "seq": 4
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Which options does the Incidents filter menu show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 5
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory traj_b | outcome=success | step=0]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee; Category\n\n---\n\n[Trajectory traj_a | outcome=failure | step=0]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee\n\n---\n\n[Trajectory traj_a | outcome=failure | step=4]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/home\nAction: <none>\n[TEMP] Banner: maintenance window scheduled for build #4821.\n\nQuestion:\nWhich options does the Incidents filter menu show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 6
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Which Priority Matrix option does the Incidents filter menu show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 7
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory traj_b | outcome=success | step=0]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee; Category\n\n---\n\n[Trajectory traj_a | outcome=failure | step=0]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee\n\n---\n\n[Trajectory traj_b | outcome=success | step=4]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident\nAction: click('Resolve')\n[STATE UPDATE] Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.\n\nQuestion:\nWhich Priority Matrix option does the Incidents filter menu show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 8
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are a strict grader for flawed-premise (abstention) questions. Judge whether a model answer correctly identifies that the question premise is wrong, consistent with the reference answer. If the model follows the flawed premise and gives a concrete answer under that premise, it must be graded 0. If the model's final answer is just UNKNOWN / cannot determine without identifying the flaw, grade 0. If the model is contradictory (both rejects premise and also gives a concrete premise-following answer), grade 0. Paraphrases are allowed when they preserve the same core flaw described by the reference answer.",
+          "role": "system"
+        },
+        {
+          "content": "Evaluate whether the model correctly handled a flawed-premise question.\n\nQuestion:\nWhich Priority Matrix option does the Incidents filter menu show?\n\nReference answer (the expected flaw-aware conclusion):\nThe Incidents filter menu has no Priority Matrix option; the premise is flawed.\n\nModel full response:\nObserved \\boxed{Priority, State, Assignee, Category}\n\nModel extracted final answer:\nPriority, State, Assignee, Category\n\nScoring rubric:\n- Label 1 only if the model clearly identifies the flawed premise and reaches a conclusion equivalent to the reference answer.\n- Label 0 if the model follows the flawed premise, gives a generic UNKNOWN without naming the flaw, or contradicts itself.\n\nOutput JSON only:\n{\"label\": 0 or 1, \"reason\": \"short rationale\"}",
+          "role": "user"
+        }
+      ],
+      "model": "fake-judge",
+      "temperature": 0.0
+    },
+    "role": "judge_abstention",
+    "seq": 9
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "After clicking Resolve on the open incident shown in the screenshot, what state does it show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 10
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": [
+            {
+              "text": "Retrieved Memory:\n[Trajectory traj_b | outcome=success | step=4]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident\nAction: click('Resolve')\n[STATE UPDATE] Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.\n\n---\n\n[Trajectory traj_b | outcome=success | step=0]\nGoal: Create a change request for the web tier (retry)\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee; Category\n\n---\n\n[Trajectory traj_a | outcome=failure | step=0]\nGoal: Create a change request for the web tier\nURL: https://example.invalid/servicenow/incident_list\nAction: click('Filter')\n[SURFACE Incidents > Filter] options: Priority; State; Assignee\n\nQuestion:\nAfter clicking Resolve on the open incident shown in the screenshot, what state does it show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+              "type": "text"
+            },
+            {
+              "image_url": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC"
+              },
+              "type": "image_url"
+            }
+          ],
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 11
+  }
+]

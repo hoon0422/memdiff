@@ -1,0 +1,239 @@
+[
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: traj_b\nDomain: enterprise\nOutcome: success\nGoal: Create a change request for the web tier (retry)\nTotal states: 5\n\nStates:\n[step 0] url=https://example.invalid/servicenow/incident_list | action=click('Filter')\n  obs: [SURFACE Incidents > Filter] options: Priority; State; Assignee; Category\n[step 1] url=https://example.invalid/servicenow/reports | action=click('Reports')\n  obs: [RETRACT Reports > Legacy] Legacy reports module was removed.\n[step 2] url=https://example.invalid/servicenow/change_request | action=select('Risk','Moderate')\n  obs: [ERROR Change Request > Save] Set Risk to Moderate before Save; the save then succeeds.\n[step 3] url=https://example.invalid/servicenow/incident | action=click('Resolve')\n  obs: [SURFACE Incident > Resolve] options: Resolve; Close\n[step 4] url=https://example.invalid/servicenow/incident | action=click('Resolve')\n  obs: [STATE UPDATE] Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 0
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[static_surface] Incidents > Filter: Incidents > Filter shows menu options",
+        "[static_surface] Reports > Legacy: Retracted: Legacy reports module was removed.",
+        "[gotcha] Change Request > Save: Workaround: Set Risk to Moderate before Save; the save then succeeds.",
+        "[static_surface] Incident > Resolve: Incident > Resolve shows menu options",
+        "[dynamic_state] Incident.INC0001: Incident INC0001 state changed from In Progress to Resolved after clicking Resolve."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 1
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: traj_a\nDomain: enterprise\nOutcome: failure\nGoal: Create a change request for the web tier\nTotal states: 5\n\nStates:\n[step 0] url=https://example.invalid/servicenow/incident_list | action=click('Filter')\n  obs: [SURFACE Incidents > Filter] options: Priority; State; Assignee\n[step 1] url=https://example.invalid/servicenow/reports | action=click('Reports')\n  obs: [SURFACE Reports > Legacy] options: Summary; Export\n[step 2] url=https://example.invalid/servicenow/change_request | action=click('Save')\n  obs: [ERROR Change Request > Save] Save is rejected silently when Risk is empty.\n[step 3] url=https://example.invalid/servicenow/incident | action=click('Resolve')\n  obs: [SURFACE Incident > Resolve] options: Resolve; Close\n[step 4] url=https://example.invalid/servicenow/home | action=<none>\n  obs: [TEMP] Banner: maintenance window scheduled for build #4821.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 2
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[static_surface] Reports > Legacy: Reports > Legacy shows menu options",
+        "[gotcha] Change Request > Save: Failed: Save is rejected silently when Risk is empty.",
+        "[temporary] temp: Banner: maintenance window scheduled for build #4821."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 3
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Why does saving a change request fail silently and how can it be avoided?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 4
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000006 | static_surface | status=active | surface=Incidents > Filter]\nIncidents > Filter shows menu options\nClosed-set visible items: Priority, State, Assignee\nProvenance: traj_a@step0\n\n---\n\n[b_0000000001 | static_surface | status=active | surface=Incidents > Filter]\nIncidents > Filter shows menu options\nClosed-set visible items: Priority, State, Assignee, Category\nProvenance: traj_b@step0\n\n---\n\n[b_0000000008 | gotcha | status=active | surface=Change Request > Save]\nFailed: Save is rejected silently when Risk is empty.\nProvenance: traj_a@step2\n\nQuestion:\nWhy does saving a change request fail silently and how can it be avoided?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 5
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are a strict grader for gotchas-style insight questions. The reference answer describes the key insight(s). Grade 1 if the model response includes at least one correct insight point from the reference answer (paraphrase allowed), and does not contradict any reference point. If the model's direction is wrong, or it contains contradictions against any reference point, grade 0. If the model gives multiple points, partial coverage is enough for 1 as long as no contradictions appear.",
+          "role": "system"
+        },
+        {
+          "content": "Evaluate whether the model answer captures the gotcha insight.\n\nQuestion:\nWhy does saving a change request fail silently and how can it be avoided?\n\nReference answer (insight points):\nSet the Risk field to Moderate before saving; saving is rejected when Risk is empty.\n\nModel full response:\nObserved \\boxed{Priority, State, Assignee}\n\nModel extracted final answer:\nPriority, State, Assignee\n\nScoring rubric:\n- Label 1 if the model includes at least one correct insight point from the reference answer (paraphrase acceptable) without contradicting any reference point.\n- Label 0 if direction is wrong, contradictory, or generic without insight.\n\nOutput JSON only:\n{\"label\": 0 or 1, \"reason\": \"short rationale\"}",
+          "role": "user"
+        }
+      ],
+      "model": "fake-judge",
+      "temperature": 0.0
+    },
+    "role": "judge_gotchas",
+    "seq": 6
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Which options does the Incidents filter menu show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 7
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000010 | static_surface | status=active | surface=Incidents > Filter]\nIncidents > Filter shows menu options\nClosed-set visible items: Priority, State, Assignee, Category\nProvenance: traj_b@step0\n\n---\n\n[b_000000000b | static_surface | status=active | surface=Incidents > Filter]\nIncidents > Filter shows menu options\nClosed-set visible items: Priority, State, Assignee\nProvenance: traj_a@step0\n\n---\n\n[b_0000000014 | dynamic_state | status=active | surface=Incident.INC0001]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4\n\nQuestion:\nWhich options does the Incidents filter menu show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 8
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Which Priority Matrix option does the Incidents filter menu show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 9
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000010 | static_surface | status=active | surface=Incidents > Filter]\nIncidents > Filter shows menu options\nClosed-set visible items: Priority, State, Assignee, Category\nProvenance: traj_b@step0\n\n---\n\n[b_000000000b | static_surface | status=active | surface=Incidents > Filter]\nIncidents > Filter shows menu options\nClosed-set visible items: Priority, State, Assignee\nProvenance: traj_a@step0\n\n---\n\n[b_0000000014 | dynamic_state | status=active | surface=Incident.INC0001]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4\n\nQuestion:\nWhich Priority Matrix option does the Incidents filter menu show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 10
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are a strict grader for flawed-premise (abstention) questions. Judge whether a model answer correctly identifies that the question premise is wrong, consistent with the reference answer. If the model follows the flawed premise and gives a concrete answer under that premise, it must be graded 0. If the model's final answer is just UNKNOWN / cannot determine without identifying the flaw, grade 0. If the model is contradictory (both rejects premise and also gives a concrete premise-following answer), grade 0. Paraphrases are allowed when they preserve the same core flaw described by the reference answer.",
+          "role": "system"
+        },
+        {
+          "content": "Evaluate whether the model correctly handled a flawed-premise question.\n\nQuestion:\nWhich Priority Matrix option does the Incidents filter menu show?\n\nReference answer (the expected flaw-aware conclusion):\nThe Incidents filter menu has no Priority Matrix option; the premise is flawed.\n\nModel full response:\nObserved \\boxed{Priority, State, Assignee, Category}\n\nModel extracted final answer:\nPriority, State, Assignee, Category\n\nScoring rubric:\n- Label 1 only if the model clearly identifies the flawed premise and reaches a conclusion equivalent to the reference answer.\n- Label 0 if the model follows the flawed premise, gives a generic UNKNOWN without naming the flaw, or contradicts itself.\n\nOutput JSON only:\n{\"label\": 0 or 1, \"reason\": \"short rationale\"}",
+          "role": "user"
+        }
+      ],
+      "model": "fake-judge",
+      "temperature": 0.0
+    },
+    "role": "judge_abstention",
+    "seq": 11
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "After clicking Resolve on the open incident shown in the screenshot, what state does it show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 12
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": [
+            {
+              "text": "Retrieved Memory:\n[b_0000000014 | dynamic_state | status=active | surface=Incident.INC0001]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4\n\n---\n\n[b_0000000012 | gotcha | status=active | surface=Change Request > Save]\nWorkaround: Set Risk to Moderate before Save; the save then succeeds.\nProvenance: traj_b@step2\n\n---\n\n[b_0000000013 | static_surface | status=active | surface=Incident > Resolve]\nIncident > Resolve shows menu options\nClosed-set visible items: Resolve, Close\nProvenance: traj_b@step3\n\nQuestion:\nAfter clicking Resolve on the open incident shown in the screenshot, what state does it show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+              "type": "text"
+            },
+            {
+              "image_url": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC"
+              },
+              "type": "image_url"
+            }
+          ],
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 13
+  }
+]

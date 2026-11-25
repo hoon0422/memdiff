@@ -119,3 +119,12 @@ forbidden_modules =
     memdiff.presentation
     memdiff.bootstrap
     memdiff.llm
+
+# ── independence: DriftSim shares scoring only via benchmarks.common ─────────────────────
+[importlinter:contract:drift-sim-no-lmev2]
+name = benchmarks.drift_sim: does not import lmev2
+type = forbidden
+source_modules =
+    memdiff.benchmarks.drift_sim
+forbidden_modules =
+    memdiff.benchmarks.lmev2
