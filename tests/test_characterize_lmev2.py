@@ -17,6 +17,7 @@ from dishka import Container, Provider, Scope, provide
 from openai import OpenAI
 
 from fake_sdk import RecordingFakeSDK
+from memdiff.audit.domain.replay import ReplayBundle
 from memdiff.benchmarks.lmev2.application.runner import LMEV2BenchmarkRunner, LMEV2RunParams
 from memdiff.bootstrap.container import build_container
 from memdiff.bootstrap.lmev2_provider import LMEV2Provider
@@ -89,6 +90,31 @@ def test_lmev2_runner_matches_golden(
         summary_file=f"{policy}_metrics.json",
         files={
             "predictions.jsonl": f"{policy}_predictions.jsonl",
-            "replay.json": f"replay_{policy}.json",
+            "replay_group1.json": f"replay_{policy}_group1.json",
+            "replay_group2.json": f"replay_{policy}_group2.json",
         },
     )
+
+
+def test_lmev2_every_group_keeps_its_replay(tmp_path: Path, deterministic_runtime: None) -> None:
+    """#14: the fixture has two haystack groups; each must leave its own schema-valid replay."""
+    out_dir = tmp_path / "run_groups"
+    container = lmev2_container(tmp_path, RecordingFakeSDK(), out_dir=out_dir)
+    try:
+        container.get(LMEV2BenchmarkRunner).run(
+            LMEV2RunParams(domain="enterprise", policy_name="belief_revision", top_k=3)
+        )
+    finally:
+        container.close()
+
+    assert sorted(p.name for p in out_dir.glob("replay_*.json")) == [
+        "replay_belief_revision_group1.json",
+        "replay_belief_revision_group2.json",
+    ]
+    bundles = [
+        ReplayBundle.model_validate_json(
+            (out_dir / f"replay_belief_revision_group{i}.json").read_text(encoding="utf-8")
+        )
+        for i in (1, 2)
+    ]
+    assert bundles[0].events != bundles[1].events  # distinct ledgers, not one overwritten copy

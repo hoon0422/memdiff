@@ -22,8 +22,8 @@ class JsonLMEV2RunStore:
         path.unlink(missing_ok=True)
         return path
 
-    def write_replay(self, policy_name: str, bundle: ReplayBundle) -> None:
-        JsonFileReplayWriter(self._dir / f"replay_{policy_name}.json").write(bundle)
+    def write_replay(self, policy_name: str, group_idx: int, bundle: ReplayBundle) -> None:
+        JsonFileReplayWriter(self._dir / f"replay_{policy_name}_group{group_idx}.json").write(bundle)
 
     def write_predictions(self, policy_name: str, records: list[dict[str, Any]]) -> None:
         with (self._dir / f"{policy_name}_predictions.jsonl").open("w", encoding="utf-8") as fp:
