@@ -1,0 +1,563 @@
+[
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: traj_b\nDomain: enterprise\nOutcome: success\nGoal: Create a change request for the web tier (retry)\nTotal states: 5\n\nStates:\n[step 0] url=https://example.invalid/servicenow/incident_list | action=click('Filter')\n  obs: [SURFACE Incidents > Filter] options: Priority; State; Assignee; Category\n[step 1] url=https://example.invalid/servicenow/reports | action=click('Reports')\n  obs: [RETRACT Reports > Legacy] Legacy reports module was removed.\n[step 2] url=https://example.invalid/servicenow/change_request | action=select('Risk','Moderate')\n  obs: [ERROR Change Request > Save] Set Risk to Moderate before Save; the save then succeeds.\n[step 3] url=https://example.invalid/servicenow/incident | action=click('Resolve')\n  obs: [SURFACE Incident > Resolve] options: Resolve; Close\n[step 4] url=https://example.invalid/servicenow/incident | action=click('Resolve')\n  obs: [STATE UPDATE] Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 0
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[static_surface] Incidents > Filter: Incidents > Filter shows menu options"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 1
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[static_surface] Reports > Legacy: Retracted: Legacy reports module was removed."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 2
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Reports > Legacy | step=1 | claim=Retracted: Legacy reports module was removed.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000001 | sim=0.532 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 3
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[gotcha] Change Request > Save: Workaround: Set Risk to Moderate before Save; the save then succeeds."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 4
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[static_surface] Incident > Resolve: Incident > Resolve shows menu options"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 5
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000002 | sim=0.414 | type=static_surface | surface=Reports > Legacy | step=1 | claim=Retracted: Legacy reports module was removed.\n- id=b_0000000001 | sim=0.385 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 6
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[dynamic_state] Incident.INC0001: Incident INC0001 state changed from In Progress to Resolved after clicking Resolve."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 7
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=Incident.INC0001 | step=1 | claim=Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000004 | sim=0.629 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n- id=b_0000000001 | sim=0.419 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 8
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: traj_a\nDomain: enterprise\nOutcome: failure\nGoal: Create a change request for the web tier\nTotal states: 5\n\nStates:\n[step 0] url=https://example.invalid/servicenow/incident_list | action=click('Filter')\n  obs: [SURFACE Incidents > Filter] options: Priority; State; Assignee\n[step 1] url=https://example.invalid/servicenow/reports | action=click('Reports')\n  obs: [SURFACE Reports > Legacy] options: Summary; Export\n[step 2] url=https://example.invalid/servicenow/change_request | action=click('Save')\n  obs: [ERROR Change Request > Save] Save is rejected silently when Risk is empty.\n[step 3] url=https://example.invalid/servicenow/incident | action=click('Resolve')\n  obs: [SURFACE Incident > Resolve] options: Resolve; Close\n[step 4] url=https://example.invalid/servicenow/home | action=<none>\n  obs: [TEMP] Banner: maintenance window scheduled for build #4821.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 9
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Incidents > Filter | step=2 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000001 | sim=1.000 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']\n- id=b_0000000002 | sim=0.532 | type=static_surface | surface=Reports > Legacy | step=1 | claim=Retracted: Legacy reports module was removed.\n- id=b_0000000005 | sim=0.419 | type=dynamic_state | surface=Incident.INC0001 | step=1 | claim=Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.\n- id=b_0000000004 | sim=0.385 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 10
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[static_surface] Reports > Legacy: Reports > Legacy shows menu options"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 11
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Reports > Legacy | step=2 | claim=Reports > Legacy shows menu options | closed_set=['Summary', 'Export']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000002 | sim=0.884 | type=static_surface | surface=Reports > Legacy | step=1 | claim=Retracted: Legacy reports module was removed.\n- id=b_0000000004 | sim=0.545 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n- id=b_0000000001 | sim=0.545 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 12
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[gotcha] Change Request > Save: Failed: Save is rejected silently when Risk is empty."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 13
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=gotcha | surface=Change Request > Save | step=2 | claim=Failed: Save is rejected silently when Risk is empty.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000003 | sim=0.602 | type=gotcha | surface=Change Request > Save | step=1 | claim=Workaround: Set Risk to Moderate before Save; the save then succeeds.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 14
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Incident > Resolve | step=2 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000004 | sim=1.000 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n- id=b_0000000005 | sim=0.629 | type=dynamic_state | surface=Incident.INC0001 | step=1 | claim=Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.\n- id=b_0000000002 | sim=0.414 | type=static_surface | surface=Reports > Legacy | step=2 | claim=Retracted: Legacy reports module was removed. | closed_set=['Export', 'Summary']\n- id=b_0000000001 | sim=0.385 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 15
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Why does saving a change request fail silently and how can it be avoided?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 16
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000001 | static_surface | surface=Incidents > Filter | evidence=1 | sim=0.261]\nIncidents > Filter shows menu options\nClosed-set observed items: Priority, State, Assignee, Category\nProvenance: traj_b@step0(success)\n\n---\n\n[b_0000000006 | gotcha | surface=Change Request > Save | evidence=1 | sim=0.246]\nFailed: Save is rejected silently when Risk is empty.\nProvenance: traj_a@step2(failure)\n\n---\n\n[b_0000000005 | dynamic_state | surface=Incident.INC0001 | evidence=1 | sim=0.134]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4(success)\n\nQuestion:\nWhy does saving a change request fail silently and how can it be avoided?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 17
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are a strict grader for gotchas-style insight questions. The reference answer describes the key insight(s). Grade 1 if the model response includes at least one correct insight point from the reference answer (paraphrase allowed), and does not contradict any reference point. If the model's direction is wrong, or it contains contradictions against any reference point, grade 0. If the model gives multiple points, partial coverage is enough for 1 as long as no contradictions appear.",
+          "role": "system"
+        },
+        {
+          "content": "Evaluate whether the model answer captures the gotcha insight.\n\nQuestion:\nWhy does saving a change request fail silently and how can it be avoided?\n\nReference answer (insight points):\nSet the Risk field to Moderate before saving; saving is rejected when Risk is empty.\n\nModel full response:\nObserved \\boxed{Priority, State, Assignee, Category}\n\nModel extracted final answer:\nPriority, State, Assignee, Category\n\nScoring rubric:\n- Label 1 if the model includes at least one correct insight point from the reference answer (paraphrase acceptable) without contradicting any reference point.\n- Label 0 if direction is wrong, contradictory, or generic without insight.\n\nOutput JSON only:\n{\"label\": 0 or 1, \"reason\": \"short rationale\"}",
+          "role": "user"
+        }
+      ],
+      "model": "fake-judge",
+      "temperature": 0.0
+    },
+    "role": "judge_gotchas",
+    "seq": 18
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Reports > Legacy | step=1 | claim=Reports > Legacy shows menu options | closed_set=['Summary', 'Export']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000007 | sim=0.545 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 19
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000008 | sim=0.545 | type=static_surface | surface=Reports > Legacy | step=1 | claim=Reports > Legacy shows menu options | closed_set=['Summary', 'Export']\n- id=b_0000000007 | sim=0.385 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 20
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Incidents > Filter | step=2 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee', 'Category']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000007 | sim=1.000 | type=static_surface | surface=Incidents > Filter | step=1 | claim=Incidents > Filter shows menu options | closed_set=['Priority', 'State', 'Assignee']\n- id=b_0000000008 | sim=0.545 | type=static_surface | surface=Reports > Legacy | step=1 | claim=Reports > Legacy shows menu options | closed_set=['Summary', 'Export']\n- id=b_000000000a | sim=0.385 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 21
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Reports > Legacy | step=2 | claim=Retracted: Legacy reports module was removed.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000008 | sim=0.884 | type=static_surface | surface=Reports > Legacy | step=1 | claim=Reports > Legacy shows menu options | closed_set=['Summary', 'Export']\n- id=b_0000000007 | sim=0.532 | type=static_surface | surface=Incidents > Filter | step=2 | claim=Incidents > Filter shows menu options | closed_set=['Assignee', 'Category', 'Priority', 'State']\n- id=b_000000000a | sim=0.414 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 22
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=gotcha | surface=Change Request > Save | step=2 | claim=Workaround: Set Risk to Moderate before Save; the save then succeeds.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000009 | sim=0.602 | type=gotcha | surface=Change Request > Save | step=1 | claim=Failed: Save is rejected silently when Risk is empty.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 23
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=static_surface | surface=Incident > Resolve | step=2 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000000a | sim=1.000 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n- id=b_0000000007 | sim=0.385 | type=static_surface | surface=Incidents > Filter | step=2 | claim=Incidents > Filter shows menu options | closed_set=['Assignee', 'Category', 'Priority', 'State']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 24
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=Incident.INC0001 | step=2 | claim=Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000000a | sim=0.629 | type=static_surface | surface=Incident > Resolve | step=1 | claim=Incident > Resolve shows menu options | closed_set=['Resolve', 'Close']\n- id=b_0000000007 | sim=0.419 | type=static_surface | surface=Incidents > Filter | step=2 | claim=Incidents > Filter shows menu options | closed_set=['Assignee', 'Category', 'Priority', 'State']",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 25
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Which options does the Incidents filter menu show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 26
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000007 | static_surface | surface=Incidents > Filter | evidence=2 | sim=0.588]\nIncidents > Filter shows menu options\nClosed-set observed items: Assignee, Category, Priority, State\nProvenance: traj_a@step0(failure), traj_b@step0(success)\n\n---\n\n[b_000000000c | dynamic_state | surface=Incident.INC0001 | evidence=1 | sim=0.468]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4(success)\n\n---\n\n[b_000000000b | gotcha | surface=Change Request > Save | evidence=1 | sim=0.204]\nWorkaround: Set Risk to Moderate before Save; the save then succeeds.\nProvenance: traj_b@step2(success)\n\nQuestion:\nWhich options does the Incidents filter menu show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 27
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "Which Priority Matrix option does the Incidents filter menu show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 28
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000007 | static_surface | surface=Incidents > Filter | evidence=2 | sim=0.593]\nIncidents > Filter shows menu options\nClosed-set observed items: Assignee, Category, Priority, State\nProvenance: traj_a@step0(failure), traj_b@step0(success)\n\n---\n\n[b_000000000c | dynamic_state | surface=Incident.INC0001 | evidence=1 | sim=0.505]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4(success)\n\n---\n\n[b_000000000b | gotcha | surface=Change Request > Save | evidence=1 | sim=0.154]\nWorkaround: Set Risk to Moderate before Save; the save then succeeds.\nProvenance: traj_b@step2(success)\n\nQuestion:\nWhich Priority Matrix option does the Incidents filter menu show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 29
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are a strict grader for flawed-premise (abstention) questions. Judge whether a model answer correctly identifies that the question premise is wrong, consistent with the reference answer. If the model follows the flawed premise and gives a concrete answer under that premise, it must be graded 0. If the model's final answer is just UNKNOWN / cannot determine without identifying the flaw, grade 0. If the model is contradictory (both rejects premise and also gives a concrete premise-following answer), grade 0. Paraphrases are allowed when they preserve the same core flaw described by the reference answer.",
+          "role": "system"
+        },
+        {
+          "content": "Evaluate whether the model correctly handled a flawed-premise question.\n\nQuestion:\nWhich Priority Matrix option does the Incidents filter menu show?\n\nReference answer (the expected flaw-aware conclusion):\nThe Incidents filter menu has no Priority Matrix option; the premise is flawed.\n\nModel full response:\nObserved \\boxed{Assignee, Category, Priority, State}\n\nModel extracted final answer:\nAssignee, Category, Priority, State\n\nScoring rubric:\n- Label 1 only if the model clearly identifies the flawed premise and reaches a conclusion equivalent to the reference answer.\n- Label 0 if the model follows the flawed premise, gives a generic UNKNOWN without naming the flaw, or contradicts itself.\n\nOutput JSON only:\n{\"label\": 0 or 1, \"reason\": \"short rationale\"}",
+          "role": "user"
+        }
+      ],
+      "model": "fake-judge",
+      "temperature": 0.0
+    },
+    "role": "judge_abstention",
+    "seq": 30
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "After clicking Resolve on the open incident shown in the screenshot, what state does it show?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 31
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an experienced colleague working in a customized ServiceNow environment. Answer based on your memory of the environment. If you do not know the answer, output exactly \\boxed{UNKNOWN}. Do not guess. Never attempt to guess an answer if you are not sure. If you believe the question's construction/premise is wrong, provide an explanation in \\boxed{} explaining why the question is flawed.",
+          "role": "system"
+        },
+        {
+          "content": [
+            {
+              "text": "Retrieved Memory:\n[b_000000000c | dynamic_state | surface=Incident.INC0001 | evidence=1 | sim=0.617]\nIncident INC0001 state changed from In Progress to Resolved after clicking Resolve.\nProvenance: traj_b@step4(success)\n\n---\n\n[b_000000000b | gotcha | surface=Change Request > Save | evidence=1 | sim=0.471]\nWorkaround: Set Risk to Moderate before Save; the save then succeeds.\nProvenance: traj_b@step2(success)\n\n---\n\n[b_000000000a | static_surface | surface=Incident > Resolve | evidence=1 | sim=0.340]\nIncident > Resolve shows menu options\nClosed-set observed items: Resolve, Close\nProvenance: traj_a@step3(failure)\n\nQuestion:\nAfter clicking Resolve on the open incident shown in the screenshot, what state does it show?\n\nAnswer based strictly on your memory above, and place your final answer inside \\boxed{...}.",
+              "type": "text"
+            },
+            {
+              "image_url": {
+                "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC"
+              },
+              "type": "image_url"
+            }
+          ],
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "lmev2_reader",
+    "seq": 32
+  }
+]

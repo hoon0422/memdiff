@@ -1,0 +1,98 @@
+=== 1) insert(): one session per step ===
+
+--- step 1 (drift_s001) input events:
+    [DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.
+    [STATE INIT] billing-api deployment_region is set to us-east-1.
+    [STATE INIT] auth-gateway token_ttl_minutes is set to 15.
+    [STATE INIT] checkout-svc oncall_owner is set to Clara Chen.
+    [TEMP LOG] One-off debug request req-23434 from test harness returned HTTP 200 in 361ms.
+  ledger ops:
+    [ADD        ] Added [durable_rule] on change_freeze: Policy change_freeze: Never run schema migrations on Fridays after 14:00 UTC without VP approval.
+    [ADD        ] Added [dynamic_state] on billing-api.deployment_region: billing-api deployment_region is us-east-1
+    [ADD        ] Added [dynamic_state] on auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes is 15
+    [ADD        ] Added [dynamic_state] on checkout-svc.oncall_owner: checkout-svc oncall_owner is Clara Chen
+    [IGNORE     ] Ignored temporary noise on ops.noise: [TEMP LOG] One-off debug request req-23434 from test harness returned HTTP 200 i
+
+--- step 2 (drift_s002) input events:
+    [DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.
+    [STATE UPDATE] auth-gateway token_ttl_minutes changed from 15 to 30 (replaces previous setting).
+    [STATE UPDATE] checkout-svc oncall_owner changed from Clara Chen to David Okafor (replaces previous setting).
+    [TEMP LOG] Temporary health-check spike on pod-674 (CPU 57%) resolved automatically after 12 seconds.
+  ledger ops:
+    [ADD        ] Added [durable_rule] on pii_logging: Policy pii_logging: All customer email addresses must be SHA-256 hashed before writing to applicatio
+    [SUPERSEDE  ] Superseded b_0000000003 -> b_0000000006: newer value for same surface
+    [SUPERSEDE  ] Superseded b_0000000004 -> b_0000000007: newer value for same surface
+    [IGNORE     ] Ignored temporary noise on ops.noise: [TEMP LOG] Temporary health-check spike on pod-674 (CPU 57%) resolved automatica
+
+--- step 3 (drift_s003) input events:
+    [STATE UPDATE] billing-api deployment_region changed from us-east-1 to ap-northeast-1 (replaces previous setting).
+    [STATE UPDATE] auth-gateway token_ttl_minutes changed from 30 to 15 (replaces previous setting).
+    [TEMP LOG] One-off debug request req-54597 from test harness returned HTTP 200 in 157ms.
+  ledger ops:
+    [SUPERSEDE  ] Superseded b_0000000002 -> b_0000000008: newer value for same surface
+    [SUPERSEDE  ] Superseded b_0000000006 -> b_0000000009: newer value for same surface
+    [IGNORE     ] Ignored temporary noise on ops.noise: [TEMP LOG] One-off debug request req-54597 from test harness returned HTTP 200 i
+
+--- step 4 (drift_s004) input events:
+    [STATE UPDATE] auth-gateway token_ttl_minutes changed from 15 to 30 (replaces previous setting).
+    [STATE UPDATE] checkout-svc oncall_owner changed from David Okafor to Brian Patel (replaces previous setting).
+    [TEMP LOG] Transient staging build #8527 queued behind nightly lint check.
+  ledger ops:
+    [SUPERSEDE  ] Superseded b_0000000009 -> b_000000000a: newer value for same surface
+    [SUPERSEDE  ] Superseded b_0000000007 -> b_000000000b: newer value for same surface
+    [IGNORE     ] Ignored temporary noise on ops.noise: [TEMP LOG] Transient staging build #8527 queued behind nightly lint check.
+
+--- step 5 (drift_s005) input events:
+    [STATE UPDATE] billing-api deployment_region changed from ap-northeast-1 to us-west-2 (replaces previous setting).
+    [STATE UPDATE] auth-gateway token_ttl_minutes changed from 30 to 45 (replaces previous setting).
+    [TEMP LOG] Transient staging build #4733 queued behind nightly lint check.
+  ledger ops:
+    [SUPERSEDE  ] Superseded b_0000000008 -> b_000000000c: newer value for same surface
+    [SUPERSEDE  ] Superseded b_000000000a -> b_000000000d: newer value for same surface
+    [IGNORE     ] Ignored temporary noise on ops.noise: [TEMP LOG] Transient staging build #4733 queued behind nightly lint check.
+
+=== 2) active beliefs after all sessions ===
+  b_0000000001 [durable_rule] change_freeze: Policy change_freeze: Never run schema migrations on Fridays after 14:00 UTC without VP approval.
+  b_0000000005 [durable_rule] pii_logging: Policy pii_logging: All customer email addresses must be SHA-256 hashed before writing to application logs.
+  b_000000000b [dynamic_state] checkout-svc.oncall_owner: checkout-svc oncall_owner is Brian Patel
+  b_000000000c [dynamic_state] billing-api.deployment_region: billing-api deployment_region is us-west-2
+  b_000000000d [dynamic_state] auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes is 45
+
+=== 3) query() top_k=3 for each ground-truth question ===
+
+  Q: What is the current `deployment_region` setting for `billing-api`?
+  gold='us-west-2' stale=['ap-northeast-1', 'us-east-1'] -> top-1 HIT
+    [b_000000000c | dynamic_state | surface=billing-api.deployment_region | evidence=1 | sim=0.559]
+    billing-api deployment_region is us-west-2
+    Provenance: drift_s005@step0(success)
+
+  Q: What is the current `token_ttl_minutes` setting for `auth-gateway`?
+  gold='45' stale=['15', '30'] -> top-1 HIT
+    [b_000000000d | dynamic_state | surface=auth-gateway.token_ttl_minutes | evidence=1 | sim=0.433]
+    auth-gateway token_ttl_minutes is 45
+    Provenance: drift_s005@step1(success)
+
+  Q: What is the current `oncall_owner` setting for `checkout-svc`?
+  gold='Brian Patel' stale=['Clara Chen', 'David Okafor'] -> top-1 HIT
+    [b_000000000b | dynamic_state | surface=checkout-svc.oncall_owner | evidence=1 | sim=0.401]
+    checkout-svc oncall_owner is Brian Patel
+    Provenance: drift_s004@step1(success)
+
+  Q: According to durable operational policy `change_freeze`, what is the required rule or threshold?
+  gold='Fridays after 14:00 UTC' stale=[] -> top-1 HIT
+    [b_0000000001 | durable_rule | surface=change_freeze | evidence=1 | sim=0.255]
+    Policy change_freeze: Never run schema migrations on Fridays after 14:00 UTC without VP approval.
+    Provenance: drift_s001@step0(success)
+
+  Q: According to durable operational policy `pii_logging`, what is the required rule or threshold?
+  gold='SHA-256 hashed' stale=[] -> top-1 HIT
+    [b_0000000005 | durable_rule | surface=pii_logging | evidence=1 | sim=0.363]
+    Policy pii_logging: All customer email addresses must be SHA-256 hashed before writing to application logs.
+    Provenance: drift_s002@step0(success)
+
+=== 4) stats ===
+  {'total_ingested_sources': 5, 'active_beliefs': 5, 'superseded_beliefs': 8, 'refuted_beliefs': 0, 'forgotten_beliefs': 0, 'raw_chunks': 0, 'estimated_active_tokens': 79, 'revision_counts': {'ADD': 5, 'IGNORE': 5, 'SUPERSEDE': 8}}
+  top-1 hits: 5/5
+
+SQLite ledger: <OUT>/demo.sqlite   (try: sqlite3 <OUT>/demo.sqlite 'SELECT step, op, summary FROM timeline_events')
+Replay JSON:   <OUT>/replay_demo.json   (load it in the web viewer: pnpm --dir web dev)

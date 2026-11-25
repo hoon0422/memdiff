@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "run_id": "run_golden",
+  "benchmark": "lmev2_small_enterprise",
+  "policy_name": "naive_rag",
+  "total_steps": 2,
+  "beliefs": [],
+  "edges": [],
+  "events": [],
+  "stats": {
+    "total_ingested_sources": 2,
+    "active_beliefs": 0,
+    "superseded_beliefs": 0,
+    "refuted_beliefs": 0,
+    "forgotten_beliefs": 0,
+    "raw_chunks": 10,
+    "estimated_active_tokens": 0,
+    "revision_counts": {}
+  },
+  "comparisons": []
+}

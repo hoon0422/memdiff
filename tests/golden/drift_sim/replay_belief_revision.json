@@ -1,0 +1,809 @@
+{
+  "schema_version": "1.0",
+  "run_id": "run_golden",
+  "benchmark": "drift_sim",
+  "policy_name": "belief_revision",
+  "total_steps": 6,
+  "beliefs": [
+    {
+      "id": "b_000000004c",
+      "type": "durable_rule",
+      "surface": "change_freeze",
+      "claim": "[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.95,
+      "durability": 0.95,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 1,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "drift_s001",
+          "step_index": 0,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "Never run schema migrations on Fridays a"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000004d",
+      "type": "dynamic_state",
+      "surface": "billing-api.deployment_region",
+      "claim": "billing-api deployment_region is set to eu-central-1.",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 2,
+      "superseded_by": "b_0000000051",
+      "provenance": [
+        {
+          "source_id": "drift_s001",
+          "step_index": 1,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "billing-api deployment_region is set to"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000004e",
+      "type": "dynamic_state",
+      "surface": "auth-gateway.token_ttl_minutes",
+      "claim": "auth-gateway token_ttl_minutes is set to 30.",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 2,
+      "superseded_by": "b_0000000052",
+      "provenance": [
+        {
+          "source_id": "drift_s001",
+          "step_index": 2,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "auth-gateway token_ttl_minutes is set to"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000004f",
+      "type": "dynamic_state",
+      "surface": "checkout-svc.oncall_owner",
+      "claim": "checkout-svc oncall_owner is set to David Okafor.",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 2,
+      "superseded_by": "b_0000000053",
+      "provenance": [
+        {
+          "source_id": "drift_s001",
+          "step_index": 3,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "checkout-svc oncall_owner is set to Davi"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000050",
+      "type": "durable_rule",
+      "surface": "pii_logging",
+      "claim": "[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.95,
+      "durability": 0.95,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 2,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "drift_s002",
+          "step_index": 0,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "All customer email addresses must be SHA"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000051",
+      "type": "dynamic_state",
+      "surface": "billing-api.deployment_region",
+      "claim": "billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 3,
+      "superseded_by": "b_0000000054",
+      "provenance": [
+        {
+          "source_id": "drift_s002",
+          "step_index": 1,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "billing-api deployment_region changed fr"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000052",
+      "type": "dynamic_state",
+      "surface": "auth-gateway.token_ttl_minutes",
+      "claim": "auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 3,
+      "superseded_by": "b_0000000055",
+      "provenance": [
+        {
+          "source_id": "drift_s002",
+          "step_index": 2,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "auth-gateway token_ttl_minutes changed f"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000053",
+      "type": "dynamic_state",
+      "surface": "checkout-svc.oncall_owner",
+      "claim": "checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 5,
+      "superseded_by": "b_0000000057",
+      "provenance": [
+        {
+          "source_id": "drift_s002",
+          "step_index": 3,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "checkout-svc oncall_owner changed from D"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000054",
+      "type": "dynamic_state",
+      "surface": "billing-api.deployment_region",
+      "claim": "billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 3,
+      "updated_at_step": 3,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "drift_s003",
+          "step_index": 0,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "billing-api deployment_region changed fr"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000055",
+      "type": "dynamic_state",
+      "surface": "auth-gateway.token_ttl_minutes",
+      "claim": "auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 3,
+      "updated_at_step": 5,
+      "superseded_by": "b_0000000056",
+      "provenance": [
+        {
+          "source_id": "drift_s003",
+          "step_index": 1,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "auth-gateway token_ttl_minutes changed f"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000056",
+      "type": "dynamic_state",
+      "surface": "auth-gateway.token_ttl_minutes",
+      "claim": "auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "superseded",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 5,
+      "updated_at_step": 6,
+      "superseded_by": "b_0000000058",
+      "provenance": [
+        {
+          "source_id": "drift_s005",
+          "step_index": 0,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "auth-gateway token_ttl_minutes changed f"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000057",
+      "type": "dynamic_state",
+      "surface": "checkout-svc.oncall_owner",
+      "claim": "checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 5,
+      "updated_at_step": 5,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "drift_s005",
+          "step_index": 1,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "checkout-svc oncall_owner changed from A"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000058",
+      "type": "dynamic_state",
+      "surface": "auth-gateway.token_ttl_minutes",
+      "claim": "auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 6,
+      "updated_at_step": 6,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "drift_s006",
+          "step_index": 0,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "auth-gateway token_ttl_minutes changed f"
+        }
+      ],
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "source_id": "b_0000000051",
+      "target_id": "b_000000004d",
+      "relation": "SUPERSEDES",
+      "step": 2,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000052",
+      "target_id": "b_000000004e",
+      "relation": "SUPERSEDES",
+      "step": 2,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000053",
+      "target_id": "b_000000004f",
+      "relation": "SUPERSEDES",
+      "step": 2,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000054",
+      "target_id": "b_0000000051",
+      "relation": "SUPERSEDES",
+      "step": 3,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000055",
+      "target_id": "b_0000000052",
+      "relation": "SUPERSEDES",
+      "step": 3,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000056",
+      "target_id": "b_0000000055",
+      "relation": "SUPERSEDES",
+      "step": 5,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000057",
+      "target_id": "b_0000000053",
+      "relation": "SUPERSEDES",
+      "step": 5,
+      "reason": "newer value"
+    },
+    {
+      "source_id": "b_0000000058",
+      "target_id": "b_0000000056",
+      "relation": "SUPERSEDES",
+      "step": 6,
+      "reason": "newer value"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "step": 1,
+      "source_id": "drift_s001",
+      "op": "ADD",
+      "belief_id": "b_000000004c",
+      "target_belief_id": null,
+      "summary": "Added [durable_rule] on change_freeze: [DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP app",
+      "details": {
+        "surface": "change_freeze",
+        "type": "durable_rule"
+      },
+      "created_at_utc": "2026-01-01T00:00:25+00:00"
+    },
+    {
+      "id": 2,
+      "step": 1,
+      "source_id": "drift_s001",
+      "op": "ADD",
+      "belief_id": "b_000000004d",
+      "target_belief_id": null,
+      "summary": "Added [dynamic_state] on billing-api.deployment_region: billing-api deployment_region is set to eu-central-1.",
+      "details": {
+        "surface": "billing-api.deployment_region",
+        "type": "dynamic_state"
+      },
+      "created_at_utc": "2026-01-01T00:00:26+00:00"
+    },
+    {
+      "id": 3,
+      "step": 1,
+      "source_id": "drift_s001",
+      "op": "ADD",
+      "belief_id": "b_000000004e",
+      "target_belief_id": null,
+      "summary": "Added [dynamic_state] on auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes is set to 30.",
+      "details": {
+        "surface": "auth-gateway.token_ttl_minutes",
+        "type": "dynamic_state"
+      },
+      "created_at_utc": "2026-01-01T00:00:27+00:00"
+    },
+    {
+      "id": 4,
+      "step": 1,
+      "source_id": "drift_s001",
+      "op": "ADD",
+      "belief_id": "b_000000004f",
+      "target_belief_id": null,
+      "summary": "Added [dynamic_state] on checkout-svc.oncall_owner: checkout-svc oncall_owner is set to David Okafor.",
+      "details": {
+        "surface": "checkout-svc.oncall_owner",
+        "type": "dynamic_state"
+      },
+      "created_at_utc": "2026-01-01T00:00:28+00:00"
+    },
+    {
+      "id": 5,
+      "step": 1,
+      "source_id": "drift_s001",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 1",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:29+00:00"
+    },
+    {
+      "id": 6,
+      "step": 1,
+      "source_id": "drift_s001",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: One-off debug request req-66838 from test harness returned HTTP 200 in 229ms.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:30+00:00"
+    },
+    {
+      "id": 7,
+      "step": 2,
+      "source_id": "drift_s002",
+      "op": "ADD",
+      "belief_id": "b_0000000050",
+      "target_belief_id": null,
+      "summary": "Added [durable_rule] on pii_logging: [DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to a",
+      "details": {
+        "surface": "pii_logging",
+        "type": "durable_rule"
+      },
+      "created_at_utc": "2026-01-01T00:00:31+00:00"
+    },
+    {
+      "id": 8,
+      "step": 2,
+      "source_id": "drift_s002",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000051",
+      "target_belief_id": "b_000000004d",
+      "summary": "Superseded b_000000004d -> b_0000000051: newer value",
+      "details": {
+        "old_claim": "billing-api deployment_region is set to eu-central-1.",
+        "new_claim": "billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:32+00:00"
+    },
+    {
+      "id": 9,
+      "step": 2,
+      "source_id": "drift_s002",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000052",
+      "target_belief_id": "b_000000004e",
+      "summary": "Superseded b_000000004e -> b_0000000052: newer value",
+      "details": {
+        "old_claim": "auth-gateway token_ttl_minutes is set to 30.",
+        "new_claim": "auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:33+00:00"
+    },
+    {
+      "id": 10,
+      "step": 2,
+      "source_id": "drift_s002",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000053",
+      "target_belief_id": "b_000000004f",
+      "summary": "Superseded b_000000004f -> b_0000000053: newer value",
+      "details": {
+        "old_claim": "checkout-svc oncall_owner is set to David Okafor.",
+        "new_claim": "checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:34+00:00"
+    },
+    {
+      "id": 11,
+      "step": 2,
+      "source_id": "drift_s002",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Temporary health-check spike on pod-690 (CPU 82%) resolved automatically after 1",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:35+00:00"
+    },
+    {
+      "id": 12,
+      "step": 2,
+      "source_id": "drift_s002",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: One-off debug request req-28907 from test harness returned HTTP 200 in 291ms.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:36+00:00"
+    },
+    {
+      "id": 13,
+      "step": 3,
+      "source_id": "drift_s003",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000054",
+      "target_belief_id": "b_0000000051",
+      "summary": "Superseded b_0000000051 -> b_0000000054: newer value",
+      "details": {
+        "old_claim": "billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+        "new_claim": "billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:37+00:00"
+    },
+    {
+      "id": 14,
+      "step": 3,
+      "source_id": "drift_s003",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000055",
+      "target_belief_id": "b_0000000052",
+      "summary": "Superseded b_0000000052 -> b_0000000055: newer value",
+      "details": {
+        "old_claim": "auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).",
+        "new_claim": "auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:38+00:00"
+    },
+    {
+      "id": 15,
+      "step": 3,
+      "source_id": "drift_s003",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: One-off debug request req-81793 from test harness returned HTTP 200 in 379ms.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:39+00:00"
+    },
+    {
+      "id": 16,
+      "step": 3,
+      "source_id": "drift_s003",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Temporary health-check spike on pod-733 (CPU 58%) resolved automatically after 1",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:40+00:00"
+    },
+    {
+      "id": 17,
+      "step": 4,
+      "source_id": "drift_s004",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Transient staging build #4999 queued behind nightly lint check.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:41+00:00"
+    },
+    {
+      "id": 18,
+      "step": 4,
+      "source_id": "drift_s004",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Transient staging build #8353 queued behind nightly lint check.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:42+00:00"
+    },
+    {
+      "id": 19,
+      "step": 5,
+      "source_id": "drift_s005",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000056",
+      "target_belief_id": "b_0000000055",
+      "summary": "Superseded b_0000000055 -> b_0000000056: newer value",
+      "details": {
+        "old_claim": "auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).",
+        "new_claim": "auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:43+00:00"
+    },
+    {
+      "id": 20,
+      "step": 5,
+      "source_id": "drift_s005",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000057",
+      "target_belief_id": "b_0000000053",
+      "summary": "Superseded b_0000000053 -> b_0000000057: newer value",
+      "details": {
+        "old_claim": "checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).",
+        "new_claim": "checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:44+00:00"
+    },
+    {
+      "id": 21,
+      "step": 5,
+      "source_id": "drift_s005",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: One-off debug request req-15138 from test harness returned HTTP 200 in 357ms.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:45+00:00"
+    },
+    {
+      "id": 22,
+      "step": 5,
+      "source_id": "drift_s005",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Transient staging build #9137 queued behind nightly lint check.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:46+00:00"
+    },
+    {
+      "id": 23,
+      "step": 6,
+      "source_id": "drift_s006",
+      "op": "SUPERSEDE",
+      "belief_id": "b_0000000058",
+      "target_belief_id": "b_0000000056",
+      "summary": "Superseded b_0000000056 -> b_0000000058: newer value",
+      "details": {
+        "old_claim": "auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).",
+        "new_claim": "auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).",
+        "reason": "newer value"
+      },
+      "created_at_utc": "2026-01-01T00:00:47+00:00"
+    },
+    {
+      "id": 24,
+      "step": 6,
+      "source_id": "drift_s006",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Ephemeral preview branch pr-341 cleaned up after merge.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:48+00:00"
+    },
+    {
+      "id": 25,
+      "step": 6,
+      "source_id": "drift_s006",
+      "op": "IGNORE",
+      "belief_id": null,
+      "target_belief_id": null,
+      "summary": "Ignored temporary noise on temp: Ephemeral preview branch pr-21 cleaned up after merge.",
+      "details": {},
+      "created_at_utc": "2026-01-01T00:00:49+00:00"
+    }
+  ],
+  "stats": {
+    "total_ingested_sources": 6,
+    "active_beliefs": 5,
+    "superseded_beliefs": 8,
+    "refuted_beliefs": 0,
+    "forgotten_beliefs": 0,
+    "raw_chunks": 0,
+    "estimated_active_tokens": 121,
+    "revision_counts": {
+      "ADD": 5,
+      "IGNORE": 12,
+      "SUPERSEDE": 8
+    }
+  },
+  "comparisons": [
+    {
+      "question_id": "dq_state_01",
+      "category": "dynamic_state",
+      "question": "What is the current `deployment_region` setting for `billing-api`?",
+      "gold_answer": "ap-northeast-1",
+      "baseline_policy": "naive_rag",
+      "baseline_answer": "us-west-2",
+      "baseline_correct": false,
+      "baseline_retrieved": [
+        "[Trajectory drift_s001 | outcome=success | step=4]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/4\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.",
+        "[Trajectory drift_s002 | outcome=success | step=1]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/1\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+        "[Trajectory drift_s004 | outcome=success | step=1]\nGoal: Process operational updates for drift_s004\nURL: drift://session/4/event/1\nAction: <none>\n[TEMP LOG] Transient staging build #8353 queued behind nightly lint check."
+      ],
+      "proposed_policy": "belief_revision",
+      "proposed_answer": "ap-northeast-1",
+      "proposed_correct": true,
+      "proposed_retrieved_belief_ids": []
+    },
+    {
+      "question_id": "dq_state_02",
+      "category": "dynamic_state",
+      "question": "What is the current `token_ttl_minutes` setting for `auth-gateway`?",
+      "gold_answer": "15",
+      "baseline_policy": "naive_rag",
+      "baseline_answer": "45",
+      "baseline_correct": false,
+      "baseline_retrieved": [
+        "[Trajectory drift_s003 | outcome=success | step=1]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/1\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).",
+        "[Trajectory drift_s001 | outcome=success | step=2]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/2\nAction: <none>\n[STATE INIT] auth-gateway token_ttl_minutes is set to 30.",
+        "[Trajectory drift_s005 | outcome=success | step=0]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting)."
+      ],
+      "proposed_policy": "belief_revision",
+      "proposed_answer": "15",
+      "proposed_correct": true,
+      "proposed_retrieved_belief_ids": []
+    },
+    {
+      "question_id": "dq_state_03",
+      "category": "dynamic_state",
+      "question": "What is the current `oncall_owner` setting for `checkout-svc`?",
+      "gold_answer": "Clara Chen",
+      "baseline_policy": "naive_rag",
+      "baseline_answer": "Clara Chen",
+      "baseline_correct": true,
+      "baseline_retrieved": [
+        "[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).",
+        "[Trajectory drift_s001 | outcome=success | step=4]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/4\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.",
+        "[Trajectory drift_s002 | outcome=success | step=3]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/3\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting)."
+      ],
+      "proposed_policy": "belief_revision",
+      "proposed_answer": "Clara Chen",
+      "proposed_correct": true,
+      "proposed_retrieved_belief_ids": []
+    },
+    {
+      "question_id": "dq_rule_01",
+      "category": "durable_rule",
+      "question": "According to durable operational policy `change_freeze`, what is the required rule or threshold?",
+      "gold_answer": "Fridays after 14:00 UTC",
+      "baseline_policy": "naive_rag",
+      "baseline_answer": "Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+      "baseline_correct": true,
+      "baseline_retrieved": [
+        "[Trajectory drift_s001 | outcome=success | step=0]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/0\nAction: <none>\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+        "[Trajectory drift_s002 | outcome=success | step=0]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/0\nAction: <none>\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+        "[Trajectory drift_s003 | outcome=success | step=0]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/0\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting)."
+      ],
+      "proposed_policy": "belief_revision",
+      "proposed_answer": "Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+      "proposed_correct": true,
+      "proposed_retrieved_belief_ids": []
+    },
+    {
+      "question_id": "dq_rule_02",
+      "category": "durable_rule",
+      "question": "According to durable operational policy `pii_logging`, what is the required rule or threshold?",
+      "gold_answer": "SHA-256 hashed",
+      "baseline_policy": "naive_rag",
+      "baseline_answer": "All customer email addresses must be SHA-256 hashed before writing to application logs.",
+      "baseline_correct": true,
+      "baseline_retrieved": [
+        "[Trajectory drift_s001 | outcome=success | step=0]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/0\nAction: <none>\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+        "[Trajectory drift_s002 | outcome=success | step=0]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/0\nAction: <none>\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+        "[Trajectory drift_s003 | outcome=success | step=0]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/0\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting)."
+      ],
+      "proposed_policy": "belief_revision",
+      "proposed_answer": "All customer email addresses must be SHA-256 hashed before writing to application logs.",
+      "proposed_correct": true,
+      "proposed_retrieved_belief_ids": []
+    }
+  ]
+}

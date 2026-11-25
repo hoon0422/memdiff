@@ -25,17 +25,27 @@ MemDiff treats agent memory as a versioned **Belief Ledger** rather than an appe
 ```text
 memdiff/
 ├── src/memdiff/
-│   ├── core/            # Belief schemas, SQLite+vector BeliefStore, MemoryPolicy protocol
-│   ├── policies/        # 4 matched-budget memory policies
-│   ├── llm/             # OpenAI client with disk caching & token/cost accounting
+│   ├── memory/          # Beliefs, 4 matched-budget policies, ports (domain/ + application/)
+│   ├── llm/             # Chat/embedding ports, caching decorators, prompt catalog
+│   ├── audit/           # Revision timeline, time-travel reconstruction, replay bundle
 │   ├── benchmarks/
-│   │   ├── lmev2/       # LongMemEval-V2 loader, official metrics port, streaming fetcher
-│   │   └── drift_sim/   # Deterministic temporal contradiction simulator
-│   └── export/          # Static JSON replay bundle exporter for the web UI
+│   │   ├── common/      # Answer helpers and workspace factory port shared by both tracks
+│   │   ├── lmev2/       # LongMemEval-V2 dataset, official scoring port, runner
+│   │   └── drift_sim/   # Deterministic temporal contradiction simulator and runner
+│   ├── adapters/        # SQLAlchemy ledger/cache, OpenAI SDK, files, HTTP fetch, numpy index
+│   ├── presentation/    # argparse CLIs behind scripts/
+│   └── bootstrap/       # dishka composition root and settings
+├── prompts/             # Every LLM prompt as a Markdown template
 ├── scripts/             # CLI utilities (data fetch, eval runners)
 ├── tests/               # Deterministic pytest suite
 └── web/                 # React + TypeScript + Vite "Memory Time Machine" UI
 ```
+
+## Manual (may be outdated)
+
+- [manual/GETTING_STARTED.md](manual/GETTING_STARTED.md) — try the engine hands-on (offline demo → live LLM → small benchmark runs)
+- [manual/CODE_MAP.md](manual/CODE_MAP.md) — which class/function does what, and the insert/query data flow
+- [manual/DATABASE.md](manual/DATABASE.md) — SQLite ledger tables, embedding storage, LLM cache
 
 ## Quickstart
 
@@ -45,6 +55,7 @@ uv sync
 cp .env.example .env
 uv run python scripts/check_ollama.py  # verifies Ollama connectivity & pulled models
 uv run pytest
+uv run python scripts/demo_memory.py  # offline demo, no LLM needed
 ```
 
 **Local / Remote GPU Ollama setup (12GB VRAM-friendly):**

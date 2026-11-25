@@ -1,0 +1,1038 @@
+[
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory drift_s001 | outcome=success | step=0]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/0\nAction: <none>\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+        "[Trajectory drift_s001 | outcome=success | step=1]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/1\nAction: <none>\n[STATE INIT] billing-api deployment_region is set to eu-central-1.",
+        "[Trajectory drift_s001 | outcome=success | step=2]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/2\nAction: <none>\n[STATE INIT] auth-gateway token_ttl_minutes is set to 30.",
+        "[Trajectory drift_s001 | outcome=success | step=3]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/3\nAction: <none>\n[STATE INIT] checkout-svc oncall_owner is set to David Okafor.",
+        "[Trajectory drift_s001 | outcome=success | step=4]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/4\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.",
+        "[Trajectory drift_s001 | outcome=success | step=5]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/5\nAction: <none>\n[TEMP LOG] One-off debug request req-66838 from test harness returned HTTP 200 in 229ms."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 0
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory drift_s002 | outcome=success | step=0]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/0\nAction: <none>\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+        "[Trajectory drift_s002 | outcome=success | step=1]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/1\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+        "[Trajectory drift_s002 | outcome=success | step=2]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/2\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).",
+        "[Trajectory drift_s002 | outcome=success | step=3]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/3\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).",
+        "[Trajectory drift_s002 | outcome=success | step=4]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/4\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-690 (CPU 82%) resolved automatically after 12 seconds.",
+        "[Trajectory drift_s002 | outcome=success | step=5]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/5\nAction: <none>\n[TEMP LOG] One-off debug request req-28907 from test harness returned HTTP 200 in 291ms."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 1
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory drift_s003 | outcome=success | step=0]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/0\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).",
+        "[Trajectory drift_s003 | outcome=success | step=1]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/1\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).",
+        "[Trajectory drift_s003 | outcome=success | step=2]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/2\nAction: <none>\n[TEMP LOG] One-off debug request req-81793 from test harness returned HTTP 200 in 379ms.",
+        "[Trajectory drift_s003 | outcome=success | step=3]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/3\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-733 (CPU 58%) resolved automatically after 12 seconds."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 2
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory drift_s004 | outcome=success | step=0]\nGoal: Process operational updates for drift_s004\nURL: drift://session/4/event/0\nAction: <none>\n[TEMP LOG] Transient staging build #4999 queued behind nightly lint check.",
+        "[Trajectory drift_s004 | outcome=success | step=1]\nGoal: Process operational updates for drift_s004\nURL: drift://session/4/event/1\nAction: <none>\n[TEMP LOG] Transient staging build #8353 queued behind nightly lint check."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 3
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory drift_s005 | outcome=success | step=0]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).",
+        "[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).",
+        "[Trajectory drift_s005 | outcome=success | step=2]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/2\nAction: <none>\n[TEMP LOG] One-off debug request req-15138 from test harness returned HTTP 200 in 357ms.",
+        "[Trajectory drift_s005 | outcome=success | step=3]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/3\nAction: <none>\n[TEMP LOG] Transient staging build #9137 queued behind nightly lint check."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 4
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[Trajectory drift_s006 | outcome=success | step=0]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).",
+        "[Trajectory drift_s006 | outcome=success | step=1]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/1\nAction: <none>\n[TEMP LOG] Ephemeral preview branch pr-341 cleaned up after merge.",
+        "[Trajectory drift_s006 | outcome=success | step=2]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/2\nAction: <none>\n[TEMP LOG] Ephemeral preview branch pr-21 cleaned up after merge."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 5
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "What is the current `deployment_region` setting for `billing-api`?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 6
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s001 | outcome=success | step=4]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/4\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.\n\n---\n\n[Trajectory drift_s002 | outcome=success | step=1]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/1\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).\n\n---\n\n[Trajectory drift_s004 | outcome=success | step=1]\nGoal: Process operational updates for drift_s004\nURL: drift://session/4/event/1\nAction: <none>\n[TEMP LOG] Transient staging build #8353 queued behind nightly lint check.\n\nQuestion:\nWhat is the current `deployment_region` setting for `billing-api`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 7
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "What is the current `token_ttl_minutes` setting for `auth-gateway`?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 8
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s003 | outcome=success | step=1]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/1\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).\n\n---\n\n[Trajectory drift_s001 | outcome=success | step=2]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/2\nAction: <none>\n[STATE INIT] auth-gateway token_ttl_minutes is set to 30.\n\n---\n\n[Trajectory drift_s005 | outcome=success | step=0]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\n\nQuestion:\nWhat is the current `token_ttl_minutes` setting for `auth-gateway`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 9
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "What is the current `oncall_owner` setting for `checkout-svc`?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 10
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n\n---\n\n[Trajectory drift_s001 | outcome=success | step=4]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/4\nAction: <none>\n[TEMP LOG] Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.\n\n---\n\n[Trajectory drift_s002 | outcome=success | step=3]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/3\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\n\nQuestion:\nWhat is the current `oncall_owner` setting for `checkout-svc`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 11
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "According to durable operational policy `change_freeze`, what is the required rule or threshold?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 12
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s001 | outcome=success | step=0]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/0\nAction: <none>\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\n\n---\n\n[Trajectory drift_s002 | outcome=success | step=0]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/0\nAction: <none>\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n\n---\n\n[Trajectory drift_s003 | outcome=success | step=0]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/0\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\n\nQuestion:\nAccording to durable operational policy `change_freeze`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 13
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "According to durable operational policy `pii_logging`, what is the required rule or threshold?"
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 14
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s001 | outcome=success | step=0]\nGoal: Process operational updates for drift_s001\nURL: drift://session/1/event/0\nAction: <none>\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\n\n---\n\n[Trajectory drift_s002 | outcome=success | step=0]\nGoal: Process operational updates for drift_s002\nURL: drift://session/2/event/0\nAction: <none>\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n\n---\n\n[Trajectory drift_s003 | outcome=success | step=0]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/0\nAction: <none>\n[STATE UPDATE] billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\n\nQuestion:\nAccording to durable operational policy `pii_logging`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 15
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s006 | outcome=success | step=1]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/1\nAction: <none>\n[TEMP LOG] Ephemeral preview branch pr-341 cleaned up after merge.\n\n---\n\n[Trajectory drift_s004 | outcome=success | step=1]\nGoal: Process operational updates for drift_s004\nURL: drift://session/4/event/1\nAction: <none>\n[TEMP LOG] Transient staging build #8353 queued behind nightly lint check.\n\n---\n\n[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n\nQuestion:\nWhat is the current `deployment_region` setting for `billing-api`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 16
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s006 | outcome=success | step=0]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\n\n---\n\n[Trajectory drift_s005 | outcome=success | step=0]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\n\n---\n\n[Trajectory drift_s003 | outcome=success | step=1]\nGoal: Process operational updates for drift_s003\nURL: drift://session/3/event/1\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).\n\nQuestion:\nWhat is the current `token_ttl_minutes` setting for `auth-gateway`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 17
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n\n---\n\n[Trajectory drift_s005 | outcome=success | step=0]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\n\n---\n\n[Trajectory drift_s006 | outcome=success | step=0]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\n\nQuestion:\nWhat is the current `oncall_owner` setting for `checkout-svc`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 18
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s006 | outcome=success | step=1]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/1\nAction: <none>\n[TEMP LOG] Ephemeral preview branch pr-341 cleaned up after merge.\n\n---\n\n[Trajectory drift_s006 | outcome=success | step=0]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\n\n---\n\n[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n\nQuestion:\nAccording to durable operational policy `change_freeze`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 19
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[Trajectory drift_s006 | outcome=success | step=1]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/1\nAction: <none>\n[TEMP LOG] Ephemeral preview branch pr-341 cleaned up after merge.\n\n---\n\n[Trajectory drift_s006 | outcome=success | step=0]\nGoal: Process operational updates for drift_s006\nURL: drift://session/6/event/0\nAction: <none>\n[STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\n\n---\n\n[Trajectory drift_s005 | outcome=success | step=1]\nGoal: Process operational updates for drift_s005\nURL: drift://session/5/event/1\nAction: <none>\n[STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n\nQuestion:\nAccording to durable operational policy `pii_logging`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 20
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: drift_s001\nDomain: drift_sim\nOutcome: success\nGoal: Process operational updates for drift_s001\nTotal states: 6\n\nStates:\n- [step 0] [DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\n- [step 1] [STATE INIT] billing-api deployment_region is set to eu-central-1.\n- [step 2] [STATE INIT] auth-gateway token_ttl_minutes is set to 30.\n- [step 3] [STATE INIT] checkout-svc oncall_owner is set to David Okafor.\n- [step 4] [TEMP LOG] Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.\n- [step 5] [TEMP LOG] One-off debug request req-66838 from test harness returned HTTP 200 in 229ms.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 21
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[durable_rule] change_freeze: [DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.",
+        "[dynamic_state] billing-api.deployment_region: billing-api deployment_region is set to eu-central-1.",
+        "[dynamic_state] auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes is set to 30.",
+        "[dynamic_state] checkout-svc.oncall_owner: checkout-svc oncall_owner is set to David Okafor.",
+        "[temporary] temp: Temporary health-check spike on pod-174 (CPU 79%) resolved automatically after 12 seconds.",
+        "[temporary] temp: One-off debug request req-66838 from test harness returned HTTP 200 in 229ms."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 22
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: drift_s002\nDomain: drift_sim\nOutcome: success\nGoal: Process operational updates for drift_s002\nTotal states: 6\n\nStates:\n- [step 0] [DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n- [step 1] [STATE UPDATE] billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).\n- [step 2] [STATE UPDATE] auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).\n- [step 3] [STATE UPDATE] checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\n- [step 4] [TEMP LOG] Temporary health-check spike on pod-690 (CPU 82%) resolved automatically after 12 seconds.\n- [step 5] [TEMP LOG] One-off debug request req-28907 from test harness returned HTTP 200 in 291ms.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 23
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[durable_rule] pii_logging: [DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+        "[dynamic_state] billing-api.deployment_region: billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+        "[dynamic_state] auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).",
+        "[dynamic_state] checkout-svc.oncall_owner: checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).",
+        "[temporary] temp: Temporary health-check spike on pod-690 (CPU 82%) resolved automatically after 12 seconds.",
+        "[temporary] temp: One-off debug request req-28907 from test harness returned HTTP 200 in 291ms."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 24
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: drift_s003\nDomain: drift_sim\nOutcome: success\nGoal: Process operational updates for drift_s003\nTotal states: 4\n\nStates:\n- [step 0] [STATE UPDATE] billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\n- [step 1] [STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).\n- [step 2] [TEMP LOG] One-off debug request req-81793 from test harness returned HTTP 200 in 379ms.\n- [step 3] [TEMP LOG] Temporary health-check spike on pod-733 (CPU 58%) resolved automatically after 12 seconds.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 25
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[dynamic_state] billing-api.deployment_region: billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).",
+        "[dynamic_state] auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).",
+        "[temporary] temp: One-off debug request req-81793 from test harness returned HTTP 200 in 379ms.",
+        "[temporary] temp: Temporary health-check spike on pod-733 (CPU 58%) resolved automatically after 12 seconds."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 26
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: drift_s004\nDomain: drift_sim\nOutcome: success\nGoal: Process operational updates for drift_s004\nTotal states: 2\n\nStates:\n- [step 0] [TEMP LOG] Transient staging build #4999 queued behind nightly lint check.\n- [step 1] [TEMP LOG] Transient staging build #8353 queued behind nightly lint check.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 27
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[temporary] temp: Transient staging build #4999 queued behind nightly lint check.",
+        "[temporary] temp: Transient staging build #8353 queued behind nightly lint check."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 28
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: drift_s005\nDomain: drift_sim\nOutcome: success\nGoal: Process operational updates for drift_s005\nTotal states: 4\n\nStates:\n- [step 0] [STATE UPDATE] auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\n- [step 1] [STATE UPDATE] checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n- [step 2] [TEMP LOG] One-off debug request req-15138 from test harness returned HTTP 200 in 357ms.\n- [step 3] [TEMP LOG] Transient staging build #9137 queued behind nightly lint check.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 29
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[dynamic_state] auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).",
+        "[dynamic_state] checkout-svc.oncall_owner: checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).",
+        "[temporary] temp: One-off debug request req-15138 from test harness returned HTTP 200 in 357ms.",
+        "[temporary] temp: Transient staging build #9137 queued behind nightly lint check."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 30
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You extract structured, atomic memory beliefs from an agent trajectory or operational session.\nReturn ONLY valid JSON with key \"beliefs\" containing a list of objects:\n{\n  \"beliefs\": [\n    {\n      \"type\": \"static_surface\" | \"dynamic_state\" | \"workflow\" | \"gotcha\" | \"durable_rule\" | \"temporary\",\n      \"surface\": \"short scoped key like 'billing-api.deployment_region' or 'ServiceNow > Incidents > Filter'\",\n      \"claim\": \"concise factual claim\",\n      \"closed_set_items\": [\"optional exhaustive list of visible UI options/items if observed\"],\n      \"confidence\": 0.0 to 1.0,\n      \"durability\": 0.0 to 1.0,\n      \"step_index\": integer or null,\n      \"excerpt\": \"short grounding phrase from the log\"\n    }\n  ]\n}\n\nRules:\n- Extract every state initialization/update (`dynamic_state`, durability ~0.85) and every durable policy/rule (`durable_rule`, durability ~0.95).\n- For UI trajectories, extract reusable environment structure (`static_surface`), UI interaction transitions (`dynamic_state`), verified multi-step flows (`workflow`), and failure traps/workarounds (`gotcha`, especially when outcome=failure or a workaround succeeded).\n- Mark one-off debug logs, ephemeral ticket/build/pod/PR IDs, or transient task noise as `temporary` with low durability (0.1 to 0.2).\n- Keep claims concise, specific, and self-contained. Use consistent `surface` keys for the same entity/attribute or UI page.\n- Output JSON only, no markdown commentary.",
+          "role": "system"
+        },
+        {
+          "content": "Trajectory ID: drift_s006\nDomain: drift_sim\nOutcome: success\nGoal: Process operational updates for drift_s006\nTotal states: 3\n\nStates:\n- [step 0] [STATE UPDATE] auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\n- [step 1] [TEMP LOG] Ephemeral preview branch pr-341 cleaned up after merge.\n- [step 2] [TEMP LOG] Ephemeral preview branch pr-21 cleaned up after merge.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "extractor",
+    "seq": 31
+  },
+  {
+    "kind": "embedding",
+    "request": {
+      "input": [
+        "[dynamic_state] auth-gateway.token_ttl_minutes: auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).",
+        "[temporary] temp: Ephemeral preview branch pr-341 cleaned up after merge.",
+        "[temporary] temp: Ephemeral preview branch pr-21 cleaned up after merge."
+      ],
+      "model": "fake-embed"
+    },
+    "seq": 32
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_000000003f | dynamic_state | status=active | surface=billing-api.deployment_region]\nbilling-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\nProvenance: drift_s003@step0\n\n---\n\n[b_000000003a | dynamic_state | status=active | surface=billing-api.deployment_region]\nbilling-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).\nProvenance: drift_s002@step1\n\n---\n\n[b_0000000034 | dynamic_state | status=active | surface=billing-api.deployment_region]\nbilling-api deployment_region is set to eu-central-1.\nProvenance: drift_s001@step1\n\nQuestion:\nWhat is the current `deployment_region` setting for `billing-api`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 33
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000045 | dynamic_state | status=active | surface=auth-gateway.token_ttl_minutes]\nauth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\nProvenance: drift_s005@step0\n\n---\n\n[b_0000000040 | dynamic_state | status=active | surface=auth-gateway.token_ttl_minutes]\nauth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).\nProvenance: drift_s003@step1\n\n---\n\n[b_000000003b | dynamic_state | status=active | surface=auth-gateway.token_ttl_minutes]\nauth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).\nProvenance: drift_s002@step2\n\nQuestion:\nWhat is the current `token_ttl_minutes` setting for `auth-gateway`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 34
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000046 | dynamic_state | status=active | surface=checkout-svc.oncall_owner]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1\n\n---\n\n[b_000000003c | dynamic_state | status=active | surface=checkout-svc.oncall_owner]\ncheckout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\nProvenance: drift_s002@step3\n\n---\n\n[b_0000000036 | dynamic_state | status=active | surface=checkout-svc.oncall_owner]\ncheckout-svc oncall_owner is set to David Okafor.\nProvenance: drift_s001@step3\n\nQuestion:\nWhat is the current `oncall_owner` setting for `checkout-svc`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 35
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000039 | durable_rule | status=active | surface=pii_logging]\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\nProvenance: drift_s002@step0\n\n---\n\n[b_0000000033 | durable_rule | status=active | surface=change_freeze]\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\nProvenance: drift_s001@step0\n\n---\n\n[b_0000000046 | dynamic_state | status=active | surface=checkout-svc.oncall_owner]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1\n\nQuestion:\nAccording to durable operational policy `change_freeze`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 36
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000039 | durable_rule | status=active | surface=pii_logging]\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\nProvenance: drift_s002@step0\n\n---\n\n[b_0000000046 | dynamic_state | status=active | surface=checkout-svc.oncall_owner]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1\n\n---\n\n[b_0000000033 | durable_rule | status=active | surface=change_freeze]\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\nProvenance: drift_s001@step0\n\nQuestion:\nAccording to durable operational policy `pii_logging`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 37
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=checkout-svc.oncall_owner | step=1 | claim=checkout-svc oncall_owner is set to David Okafor.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000004d | sim=0.398 | type=dynamic_state | surface=billing-api.deployment_region | step=1 | claim=billing-api deployment_region is set to eu-central-1.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 38
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000004c | sim=0.646 | type=durable_rule | surface=change_freeze | step=1 | claim=[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\n- id=b_000000004f | sim=0.374 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=1 | claim=checkout-svc oncall_owner is set to David Okafor.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 39
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=billing-api.deployment_region | step=2 | claim=billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000004d | sim=0.850 | type=dynamic_state | surface=billing-api.deployment_region | step=1 | claim=billing-api deployment_region is set to eu-central-1.\n- id=b_0000000050 | sim=0.474 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n- id=b_000000004f | sim=0.366 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=1 | claim=checkout-svc oncall_owner is set to David Okafor.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 40
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=2 | claim=auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000004e | sim=0.913 | type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=1 | claim=auth-gateway token_ttl_minutes is set to 30.\n- id=b_0000000050 | sim=0.365 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n- id=b_0000000051 | sim=0.361 | type=dynamic_state | surface=billing-api.deployment_region | step=2 | claim=billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 41
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=checkout-svc.oncall_owner | step=2 | claim=checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_000000004f | sim=0.866 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=1 | claim=checkout-svc oncall_owner is set to David Okafor.\n- id=b_0000000050 | sim=0.501 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n- id=b_0000000051 | sim=0.477 | type=dynamic_state | surface=billing-api.deployment_region | step=2 | claim=billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).\n- id=b_0000000052 | sim=0.413 | type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=2 | claim=auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 42
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=billing-api.deployment_region | step=3 | claim=billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000051 | sim=0.944 | type=dynamic_state | surface=billing-api.deployment_region | step=2 | claim=billing-api deployment_region changed from eu-central-1 to us-west-2 (replaces previous setting).\n- id=b_0000000050 | sim=0.448 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n- id=b_0000000053 | sim=0.427 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=2 | claim=checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 43
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=3 | claim=auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000052 | sim=0.979 | type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=2 | claim=auth-gateway token_ttl_minutes changed from 30 to 60 (replaces previous setting).\n- id=b_0000000053 | sim=0.432 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=2 | claim=checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\n- id=b_0000000050 | sim=0.358 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 44
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=5 | claim=auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000055 | sim=1.000 | type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=3 | claim=auth-gateway token_ttl_minutes changed from 60 to 45 (replaces previous setting).\n- id=b_0000000053 | sim=0.432 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=2 | claim=checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\n- id=b_0000000050 | sim=0.358 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 45
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=checkout-svc.oncall_owner | step=5 | claim=checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000053 | sim=0.954 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=2 | claim=checkout-svc oncall_owner changed from David Okafor to Alice Kim (replaces previous setting).\n- id=b_0000000050 | sim=0.564 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\n- id=b_0000000054 | sim=0.487 | type=dynamic_state | surface=billing-api.deployment_region | step=3 | claim=billing-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\n- id=b_0000000056 | sim=0.391 | type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=5 | claim=auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 46
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You reconcile a NEW candidate belief against EXISTING active beliefs in memory.\nChoose exactly ONE revision operation and return ONLY valid JSON:\n{\n  \"op\": \"ADD\" | \"SUPERSEDE\" | \"CONSOLIDATE\" | \"REFUTE\" | \"IGNORE\",\n  \"target_belief_id\": \"id of an existing belief from the list, or null for ADD/IGNORE\",\n  \"merged_claim\": \"optional updated/merged claim for SUPERSEDE or CONSOLIDATE, else null\",\n  \"reason\": \"short justification\"\n}\n\nDecision rules:\n- SUPERSEDE: The candidate updates or replaces an existing belief about the SAME entity/attribute/surface (e.g., new setting value replacing old value, or verified workaround replacing a failed attempt). Set target_belief_id to the outdated belief.\n- CONSOLIDATE: The candidate confirms or adds complementary details/closed-set items to an existing belief without contradicting it. Set target_belief_id to that belief.\n- REFUTE: The candidate proves an existing belief is false without providing a replacement claim.\n- IGNORE: The candidate is redundant/identical to an existing active belief or is uninformative noise.\n- ADD: The candidate is genuinely new and distinct from all listed active beliefs.\n- Never supersede a `durable_rule` unless the candidate explicitly revokes that exact policy.\n- Output JSON only.",
+          "role": "system"
+        },
+        {
+          "content": "NEW CANDIDATE BELIEF:\n- type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=6 | claim=auth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\n\nEXISTING ACTIVE BELIEFS:\n- id=b_0000000056 | sim=0.977 | type=dynamic_state | surface=auth-gateway.token_ttl_minutes | step=5 | claim=auth-gateway token_ttl_minutes changed from 45 to 60 (replaces previous setting).\n- id=b_0000000057 | sim=0.440 | type=dynamic_state | surface=checkout-svc.oncall_owner | step=5 | claim=checkout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\n- id=b_0000000050 | sim=0.381 | type=durable_rule | surface=pii_logging | step=2 | claim=[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "reconciler",
+    "seq": 47
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000054 | dynamic_state | surface=billing-api.deployment_region | evidence=1 | sim=0.625]\nbilling-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\nProvenance: drift_s003@step0(success)\n\n---\n\n[b_0000000057 | dynamic_state | surface=checkout-svc.oncall_owner | evidence=1 | sim=0.328]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1(success)\n\n---\n\n[b_000000004c | durable_rule | surface=change_freeze | evidence=1 | sim=0.211]\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\nProvenance: drift_s001@step0(success)\n\nQuestion:\nWhat is the current `deployment_region` setting for `billing-api`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 48
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000058 | dynamic_state | surface=auth-gateway.token_ttl_minutes | evidence=1 | sim=0.701]\nauth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\nProvenance: drift_s006@step0(success)\n\n---\n\n[b_0000000057 | dynamic_state | surface=checkout-svc.oncall_owner | evidence=1 | sim=0.293]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1(success)\n\n---\n\n[b_0000000054 | dynamic_state | surface=billing-api.deployment_region | evidence=1 | sim=0.215]\nbilling-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\nProvenance: drift_s003@step0(success)\n\nQuestion:\nWhat is the current `token_ttl_minutes` setting for `auth-gateway`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 49
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000057 | dynamic_state | surface=checkout-svc.oncall_owner | evidence=1 | sim=0.650]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1(success)\n\n---\n\n[b_0000000054 | dynamic_state | surface=billing-api.deployment_region | evidence=1 | sim=0.267]\nbilling-api deployment_region changed from us-west-2 to ap-northeast-1 (replaces previous setting).\nProvenance: drift_s003@step0(success)\n\n---\n\n[b_0000000058 | dynamic_state | surface=auth-gateway.token_ttl_minutes | evidence=1 | sim=0.201]\nauth-gateway token_ttl_minutes changed from 60 to 15 (replaces previous setting).\nProvenance: drift_s006@step0(success)\n\nQuestion:\nWhat is the current `oncall_owner` setting for `checkout-svc`?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 50
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000050 | durable_rule | surface=pii_logging | evidence=1 | sim=0.634]\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\nProvenance: drift_s002@step0(success)\n\n---\n\n[b_000000004c | durable_rule | surface=change_freeze | evidence=1 | sim=0.619]\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\nProvenance: drift_s001@step0(success)\n\n---\n\n[b_0000000057 | dynamic_state | surface=checkout-svc.oncall_owner | evidence=1 | sim=0.459]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1(success)\n\nQuestion:\nAccording to durable operational policy `change_freeze`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 51
+  },
+  {
+    "kind": "chat",
+    "request": {
+      "extra_body": {
+        "reasoning_effort": "none"
+      },
+      "max_tokens": 16384,
+      "messages": [
+        {
+          "content": "You are an operations assistant answering questions strictly from retrieved memory notes. Sessions are ordered chronologically (higher session numbers are newer). Always answer with the most current valid value or the exact required durable policy threshold. Put ONLY the concise final answer inside \\boxed{...}. If the memory does not contain the answer, output \\boxed{UNKNOWN}.",
+          "role": "system"
+        },
+        {
+          "content": "Retrieved Memory:\n[b_0000000050 | durable_rule | surface=pii_logging | evidence=1 | sim=0.712]\n[DURABLE POLICY:pii_logging] All customer email addresses must be SHA-256 hashed before writing to application logs.\nProvenance: drift_s002@step0(success)\n\n---\n\n[b_0000000057 | dynamic_state | surface=checkout-svc.oncall_owner | evidence=1 | sim=0.568]\ncheckout-svc oncall_owner changed from Alice Kim to Clara Chen (replaces previous setting).\nProvenance: drift_s005@step1(success)\n\n---\n\n[b_000000004c | durable_rule | surface=change_freeze | evidence=1 | sim=0.547]\n[DURABLE POLICY:change_freeze] Never run schema migrations on Fridays after 14:00 UTC without VP approval.\nProvenance: drift_s001@step0(success)\n\nQuestion:\nAccording to durable operational policy `pii_logging`, what is the required rule or threshold?\n\nRespond briefly and put your final answer inside \\boxed{...}.",
+          "role": "user"
+        }
+      ],
+      "model": "fake-chat",
+      "temperature": 0.0
+    },
+    "role": "drift_reader",
+    "seq": 52
+  }
+]

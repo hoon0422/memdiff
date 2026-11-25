@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from memdiff.benchmarks.drift_sim.simulator import DriftSimConfig, generate_episode
+from memdiff.benchmarks.drift_sim.domain.episode import DriftSimConfig, generate_episode
 
 
 def test_drift_sim_is_deterministic_and_tracks_stale_values() -> None:

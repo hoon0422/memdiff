@@ -1,0 +1,423 @@
+{
+  "schema_version": "1.0",
+  "run_id": "run_golden",
+  "benchmark": "lmev2_small_enterprise",
+  "policy_name": "structured_extract",
+  "total_steps": 2,
+  "beliefs": [
+    {
+      "id": "b_000000000b",
+      "type": "static_surface",
+      "surface": "Incidents > Filter",
+      "claim": "Incidents > Filter shows menu options",
+      "closed_set_items": [
+        "Priority",
+        "State",
+        "Assignee"
+      ],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.8,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 1,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_a",
+          "step_index": 0,
+          "url": null,
+          "outcome": "failure",
+          "excerpt": "options: Priority; State; Assignee"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000000c",
+      "type": "static_surface",
+      "surface": "Reports > Legacy",
+      "claim": "Reports > Legacy shows menu options",
+      "closed_set_items": [
+        "Summary",
+        "Export"
+      ],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.8,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 1,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_a",
+          "step_index": 1,
+          "url": null,
+          "outcome": "failure",
+          "excerpt": "options: Summary; Export"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000000d",
+      "type": "gotcha",
+      "surface": "Change Request > Save",
+      "claim": "Failed: Save is rejected silently when Risk is empty.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.8,
+      "durability": 0.7,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 1,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_a",
+          "step_index": 2,
+          "url": null,
+          "outcome": "failure",
+          "excerpt": "Save is rejected silently when Risk is e"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000000e",
+      "type": "static_surface",
+      "surface": "Incident > Resolve",
+      "claim": "Incident > Resolve shows menu options",
+      "closed_set_items": [
+        "Resolve",
+        "Close"
+      ],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.8,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 1,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_a",
+          "step_index": 3,
+          "url": null,
+          "outcome": "failure",
+          "excerpt": "options: Resolve; Close"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_000000000f",
+      "type": "temporary",
+      "surface": "temp",
+      "claim": "Banner: maintenance window scheduled for build #4821.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.5,
+      "durability": 0.1,
+      "evidence_count": 1,
+      "created_at_step": 1,
+      "updated_at_step": 1,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_a",
+          "step_index": 4,
+          "url": null,
+          "outcome": "failure",
+          "excerpt": "Banner: maintenance window scheduled for"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000010",
+      "type": "static_surface",
+      "surface": "Incidents > Filter",
+      "claim": "Incidents > Filter shows menu options",
+      "closed_set_items": [
+        "Priority",
+        "State",
+        "Assignee",
+        "Category"
+      ],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.8,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 2,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_b",
+          "step_index": 0,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "options: Priority; State; Assignee; Cate"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000011",
+      "type": "static_surface",
+      "surface": "Reports > Legacy",
+      "claim": "Retracted: Legacy reports module was removed.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.8,
+      "durability": 0.7,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 2,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_b",
+          "step_index": 1,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "Legacy reports module was removed."
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000012",
+      "type": "gotcha",
+      "surface": "Change Request > Save",
+      "claim": "Workaround: Set Risk to Moderate before Save; the save then succeeds.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.8,
+      "durability": 0.7,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 2,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_b",
+          "step_index": 2,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "Set Risk to Moderate before Save; the sa"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000013",
+      "type": "static_surface",
+      "surface": "Incident > Resolve",
+      "claim": "Incident > Resolve shows menu options",
+      "closed_set_items": [
+        "Resolve",
+        "Close"
+      ],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.8,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 2,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_b",
+          "step_index": 3,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "options: Resolve; Close"
+        }
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "b_0000000014",
+      "type": "dynamic_state",
+      "surface": "Incident.INC0001",
+      "claim": "Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.",
+      "closed_set_items": [],
+      "status": "active",
+      "confidence": 0.9,
+      "durability": 0.85,
+      "evidence_count": 1,
+      "created_at_step": 2,
+      "updated_at_step": 2,
+      "superseded_by": null,
+      "provenance": [
+        {
+          "source_id": "traj_b",
+          "step_index": 4,
+          "url": null,
+          "outcome": "success",
+          "excerpt": "Incident INC0001 state changed from In P"
+        }
+      ],
+      "metadata": {}
+    }
+  ],
+  "edges": [],
+  "events": [
+    {
+      "id": 1,
+      "step": 1,
+      "source_id": "traj_a",
+      "op": "ADD",
+      "belief_id": "b_000000000b",
+      "target_belief_id": null,
+      "summary": "Added [static_surface] on Incidents > Filter: Incidents > Filter shows menu options",
+      "details": {
+        "surface": "Incidents > Filter",
+        "type": "static_surface"
+      },
+      "created_at_utc": "2026-01-01T00:00:10+00:00"
+    },
+    {
+      "id": 2,
+      "step": 1,
+      "source_id": "traj_a",
+      "op": "ADD",
+      "belief_id": "b_000000000c",
+      "target_belief_id": null,
+      "summary": "Added [static_surface] on Reports > Legacy: Reports > Legacy shows menu options",
+      "details": {
+        "surface": "Reports > Legacy",
+        "type": "static_surface"
+      },
+      "created_at_utc": "2026-01-01T00:00:11+00:00"
+    },
+    {
+      "id": 3,
+      "step": 1,
+      "source_id": "traj_a",
+      "op": "ADD",
+      "belief_id": "b_000000000d",
+      "target_belief_id": null,
+      "summary": "Added [gotcha] on Change Request > Save: Failed: Save is rejected silently when Risk is empty.",
+      "details": {
+        "surface": "Change Request > Save",
+        "type": "gotcha"
+      },
+      "created_at_utc": "2026-01-01T00:00:12+00:00"
+    },
+    {
+      "id": 4,
+      "step": 1,
+      "source_id": "traj_a",
+      "op": "ADD",
+      "belief_id": "b_000000000e",
+      "target_belief_id": null,
+      "summary": "Added [static_surface] on Incident > Resolve: Incident > Resolve shows menu options",
+      "details": {
+        "surface": "Incident > Resolve",
+        "type": "static_surface"
+      },
+      "created_at_utc": "2026-01-01T00:00:13+00:00"
+    },
+    {
+      "id": 5,
+      "step": 1,
+      "source_id": "traj_a",
+      "op": "ADD",
+      "belief_id": "b_000000000f",
+      "target_belief_id": null,
+      "summary": "Added [temporary] on temp: Banner: maintenance window scheduled for build #4821.",
+      "details": {
+        "surface": "temp",
+        "type": "temporary"
+      },
+      "created_at_utc": "2026-01-01T00:00:14+00:00"
+    },
+    {
+      "id": 6,
+      "step": 2,
+      "source_id": "traj_b",
+      "op": "ADD",
+      "belief_id": "b_0000000010",
+      "target_belief_id": null,
+      "summary": "Added [static_surface] on Incidents > Filter: Incidents > Filter shows menu options",
+      "details": {
+        "surface": "Incidents > Filter",
+        "type": "static_surface"
+      },
+      "created_at_utc": "2026-01-01T00:00:15+00:00"
+    },
+    {
+      "id": 7,
+      "step": 2,
+      "source_id": "traj_b",
+      "op": "ADD",
+      "belief_id": "b_0000000011",
+      "target_belief_id": null,
+      "summary": "Added [static_surface] on Reports > Legacy: Retracted: Legacy reports module was removed.",
+      "details": {
+        "surface": "Reports > Legacy",
+        "type": "static_surface"
+      },
+      "created_at_utc": "2026-01-01T00:00:16+00:00"
+    },
+    {
+      "id": 8,
+      "step": 2,
+      "source_id": "traj_b",
+      "op": "ADD",
+      "belief_id": "b_0000000012",
+      "target_belief_id": null,
+      "summary": "Added [gotcha] on Change Request > Save: Workaround: Set Risk to Moderate before Save; the save then succeeds.",
+      "details": {
+        "surface": "Change Request > Save",
+        "type": "gotcha"
+      },
+      "created_at_utc": "2026-01-01T00:00:17+00:00"
+    },
+    {
+      "id": 9,
+      "step": 2,
+      "source_id": "traj_b",
+      "op": "ADD",
+      "belief_id": "b_0000000013",
+      "target_belief_id": null,
+      "summary": "Added [static_surface] on Incident > Resolve: Incident > Resolve shows menu options",
+      "details": {
+        "surface": "Incident > Resolve",
+        "type": "static_surface"
+      },
+      "created_at_utc": "2026-01-01T00:00:18+00:00"
+    },
+    {
+      "id": 10,
+      "step": 2,
+      "source_id": "traj_b",
+      "op": "ADD",
+      "belief_id": "b_0000000014",
+      "target_belief_id": null,
+      "summary": "Added [dynamic_state] on Incident.INC0001: Incident INC0001 state changed from In Progress to Resolved after clicking Resolve.",
+      "details": {
+        "surface": "Incident.INC0001",
+        "type": "dynamic_state"
+      },
+      "created_at_utc": "2026-01-01T00:00:19+00:00"
+    }
+  ],
+  "stats": {
+    "total_ingested_sources": 2,
+    "active_beliefs": 10,
+    "superseded_beliefs": 0,
+    "refuted_beliefs": 0,
+    "forgotten_beliefs": 0,
+    "raw_chunks": 0,
+    "estimated_active_tokens": 118,
+    "revision_counts": {
+      "ADD": 10
+    }
+  },
+  "comparisons": []
+}
