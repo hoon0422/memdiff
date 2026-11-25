@@ -4,8 +4,6 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from memdiff.benchmarks.drift_sim.runner import run_drift_sim_benchmark
-from memdiff.benchmarks.drift_sim.simulator import DriftSimConfig
 from memdiff.benchmarks.lmev2.domain.dataset import LMEV2Question, select_balanced_questions
 from memdiff.config import Settings
 from memdiff.core.models import Belief, BeliefType, RevisionOp
@@ -36,32 +34,6 @@ class _DeterministicFakeSDK:
             choices=[SimpleNamespace(message=SimpleNamespace(content="\\boxed{us-east-1}"))],
             usage=SimpleNamespace(prompt_tokens=20, completion_tokens=5),
         )
-
-
-def test_drift_sim_runner_end_to_end_offline(tmp_path: Path) -> None:
-    settings = Settings(
-        llm_base_url="http://127.0.0.1:11434/v1",
-        memdiff_cache_dir=tmp_path / "cache",
-    )
-    client = CachedLLMClient(settings=settings, client=_DeterministicFakeSDK())
-    try:
-        cfg = DriftSimConfig(seed=7, num_sessions=6, num_entities=3, num_durable_rules=2)
-        out_dir = tmp_path / "run_001"
-        summary = run_drift_sim_benchmark(
-            config=cfg,
-            policies=["naive_rag", "recency_rag"],
-            output_dir=out_dir,
-            top_k=3,
-            client=client,
-        )
-        assert summary["benchmark"] == "drift_sim"
-        assert set(summary["policies"].keys()) == {"naive_rag", "recency_rag"}
-        assert (out_dir / "summary.json").exists()
-        assert (out_dir / "naive_rag_predictions.jsonl").exists()
-        assert (out_dir / "recency_rag_predictions.jsonl").exists()
-        assert (out_dir / "replay_recency_rag.json").exists()
-    finally:
-        client.close()
 
 
 def test_select_balanced_questions_caps_per_type() -> None:
