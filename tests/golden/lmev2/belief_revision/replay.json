@@ -254,7 +254,26 @@
       "target_belief_id": null,
       "summary": "Consolidated evidence (#2) into b_0000000007 on Incidents > Filter",
       "details": {
-        "evidence_count": 2
+        "evidence_count": 2,
+        "previous": {
+          "claim": "Incidents > Filter shows menu options",
+          "closed_set_items": [
+            "Priority",
+            "State",
+            "Assignee"
+          ],
+          "confidence": 0.9,
+          "evidence_count": 1,
+          "provenance": [
+            {
+              "source_id": "traj_a",
+              "step_index": 0,
+              "url": null,
+              "outcome": "failure",
+              "excerpt": "options: Priority; State; Assignee"
+            }
+          ]
+        }
       },
       "created_at_utc": "2026-01-01T00:00:15+00:00"
     },

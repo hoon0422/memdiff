@@ -196,6 +196,7 @@ class BeliefRevisionPolicy(SteppedPolicy):
                 belief_id=updated.id,
                 surface=updated.surface,
                 evidence_count=updated.evidence_count,
+                previous=existing,
             )
         )
 

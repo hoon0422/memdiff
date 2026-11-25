@@ -1,5 +1,7 @@
 import type { ReplayBundle } from "../types/replay";
 
+const T = "2026-01-01T00:00:00+00:00";
+
 /** Built-in fixture so the Memory Time Machine UI is immediately inspectable before real eval runs. */
 export const SAMPLE_REPLAY: ReplayBundle = {
   schema_version: "1.0",
@@ -22,12 +24,13 @@ export const SAMPLE_REPLAY: ReplayBundle = {
       updated_at_step: 2,
       superseded_by: "b_002",
       provenance: [{ source_id: "traj_014", step_index: 4, outcome: "failure" }],
+      metadata: {},
     },
     {
       id: "b_002",
       type: "gotcha",
       surface: "ServiceNow > Hardware List > Search",
-      claim: "Switching the top search dropdown to 'Assigned to' crashes/resets; use the funnel icon Filter Builder instead.",
+      claim: "Switching the top search dropdown to 'Assigned to' crashes/resets; use the funnel icon Filter Builder instead (confirmed twice).",
       closed_set_items: [],
       status: "active",
       confidence: 0.94,
@@ -40,6 +43,7 @@ export const SAMPLE_REPLAY: ReplayBundle = {
         { source_id: "traj_027", step_index: 6, outcome: "success" },
         { source_id: "traj_051", step_index: 3, outcome: "success" },
       ],
+      metadata: {},
     },
     {
       id: "b_003",
@@ -55,6 +59,7 @@ export const SAMPLE_REPLAY: ReplayBundle = {
       updated_at_step: 3,
       superseded_by: null,
       provenance: [{ source_id: "traj_014", step_index: 1, outcome: "failure" }],
+      metadata: {},
     },
     {
       id: "b_004",
@@ -70,6 +75,7 @@ export const SAMPLE_REPLAY: ReplayBundle = {
       updated_at_step: 3,
       superseded_by: null,
       provenance: [{ source_id: "traj_038", step_index: 9, outcome: "success" }],
+      metadata: {},
     },
   ],
   edges: [
@@ -82,13 +88,40 @@ export const SAMPLE_REPLAY: ReplayBundle = {
     },
   ],
   events: [
-    { step: 1, source_id: "traj_014", op: "ADD", belief_id: "b_001", summary: "Added initial search observation from failed run" },
-    { step: 1, source_id: "traj_014", op: "ADD", belief_id: "b_003", summary: "Recorded ephemeral task incident ID WAS1315884" },
-    { step: 2, source_id: "traj_027", op: "SUPERSEDE", belief_id: "b_002", target_belief_id: "b_001", summary: "Superseded failed search attempt with verified gotcha (funnel icon)" },
-    { step: 3, source_id: "traj_038", op: "ADD", belief_id: "b_004", summary: "Captured closed-set checkboxes on Personalize Form dialog" },
-    { step: 3, source_id: "traj_038", op: "FORGET", target_belief_id: "b_003", summary: "Evicted temporary task incident ID (low durability)" },
-    { step: 4, source_id: "traj_051", op: "CONSOLIDATE", belief_id: "b_002", summary: "Consolidated 2nd confirming trajectory into gotcha b_002" },
+    { step: 1, source_id: "traj_014", op: "ADD", belief_id: "b_001", summary: "Added initial search observation from failed run", details: {}, created_at_utc: T },
+    { step: 1, source_id: "traj_014", op: "ADD", belief_id: "b_003", summary: "Recorded ephemeral task incident ID WAS1315884", details: {}, created_at_utc: T },
+    { step: 2, source_id: "traj_027", op: "SUPERSEDE", belief_id: "b_002", target_belief_id: "b_001", summary: "Superseded failed search attempt with verified gotcha (funnel icon)", details: {}, created_at_utc: T },
+    { step: 3, source_id: "traj_038", op: "ADD", belief_id: "b_004", summary: "Captured closed-set checkboxes on Personalize Form dialog", details: {}, created_at_utc: T },
+    { step: 3, source_id: "traj_038", op: "FORGET", target_belief_id: "b_003", summary: "Evicted temporary task incident ID (low durability)", details: {}, created_at_utc: T },
+    {
+      step: 4,
+      source_id: "traj_051",
+      op: "CONSOLIDATE",
+      belief_id: "b_002",
+      summary: "Consolidated 2nd confirming trajectory into gotcha b_002",
+      details: {
+        evidence_count: 2,
+        previous: {
+          claim: "Switching the top search dropdown to 'Assigned to' crashes/resets; use the funnel icon Filter Builder instead.",
+          closed_set_items: [],
+          confidence: 0.9,
+          evidence_count: 1,
+          provenance: [{ source_id: "traj_027", step_index: 6, url: null, outcome: "success", excerpt: null }],
+        },
+      },
+      created_at_utc: T,
+    },
   ],
+  stats: {
+    total_ingested_sources: 4,
+    active_beliefs: 2,
+    superseded_beliefs: 1,
+    refuted_beliefs: 0,
+    forgotten_beliefs: 1,
+    raw_chunks: 0,
+    estimated_active_tokens: 54,
+    revision_counts: { ADD: 3, CONSOLIDATE: 1, FORGET: 1, SUPERSEDE: 1 },
+  },
   comparisons: [
     {
       question_id: "sample_q_gotcha",

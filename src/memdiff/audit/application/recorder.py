@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from memdiff.audit.application.ports import AuditLogRepository
-from memdiff.audit.domain.timeline import BeliefEdge, TimelineEvent
+from memdiff.audit.domain.timeline import CONSOLIDATE_PREVIOUS_FIELDS, BeliefEdge, TimelineEvent
 from memdiff.memory.domain.revision import (
     BeliefAdded,
     BeliefConsolidated,
@@ -76,7 +76,12 @@ class RevisionAuditRecorder:
                             f"Consolidated evidence (#{event.evidence_count}) into "
                             f"{event.belief_id} on {event.surface}"
                         ),
-                        details={"evidence_count": event.evidence_count},
+                        details={
+                            "evidence_count": event.evidence_count,
+                            "previous": event.previous.model_dump(
+                                mode="json", include=CONSOLIDATE_PREVIOUS_FIELDS
+                            ),
+                        },
                     )
                 )
             case BeliefRefuted():
