@@ -3,18 +3,40 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
+from contextlib import contextmanager
 
-from dishka import Provider, Scope, from_context, provide
+from dishka import Container, Provider, Scope, alias, from_context, provide
 from openai import OpenAI
 from sqlalchemy import Engine, create_engine
 
+from memdiff.adapters.llm.belief_ops import LLMBeliefExtractor, LLMBeliefReconciler, LLMEmbedder
 from memdiff.adapters.llm.openai_compat import (
     OllamaModelLister,
     OpenAIChatModel,
     OpenAIEmbeddingModel,
 )
+from memdiff.adapters.offline.belief_ops import (
+    OfflineBeliefExtractor,
+    OfflineBeliefReconciler,
+    OfflineEmbedder,
+)
+from memdiff.adapters.persistence.sqlalchemy.ledger import (
+    SqlAuditLog,
+    SqlBeliefRepository,
+    SqlChunkRepository,
+    SqlUnitOfWork,
+    make_ledger_engine,
+)
 from memdiff.adapters.persistence.sqlalchemy.llm_cache import SqlLLMResponseCache
 from memdiff.adapters.prompts.fs_source import FilesystemPromptSource
+from memdiff.audit.application.ports import AuditLogRepository, BeliefSource
+from memdiff.audit.application.recorder import RevisionAuditRecorder
+from memdiff.audit.application.replay import ReplayService
+from memdiff.benchmarks.common.application.workspace import (
+    MemoryWorkspace,
+    MemoryWorkspaceFactory,
+    WorkspaceSpec,
+)
 from memdiff.bootstrap.settings import Settings
 from memdiff.llm.application.caching import CachingChatModel, CachingEmbeddingModel
 from memdiff.llm.application.catalog import PromptCatalog
@@ -26,6 +48,22 @@ from memdiff.llm.application.ports import (
     PromptSource,
 )
 from memdiff.llm.domain.usage import UsageStats
+from memdiff.memory.application.policies import (
+    BeliefRevisionPolicy,
+    NaiveRagPolicy,
+    RecencyRagPolicy,
+    StructuredExtractPolicy,
+)
+from memdiff.memory.application.policy import MemoryPolicy
+from memdiff.memory.application.ports import (
+    BeliefExtractor,
+    BeliefReconciler,
+    BeliefRepository,
+    ChunkRepository,
+    Embedder,
+    RevisionEventSink,
+    UnitOfWork,
+)
 
 
 class ConfigProvider(Provider):
@@ -97,3 +135,155 @@ class PromptProvider(Provider):
     @provide
     def prompt_catalog(self, source: PromptSource) -> PromptCatalog:
         return PromptCatalog(source)
+
+
+class MemoryProvider(Provider):
+    """One ledger + policy per `WorkspaceSpec`; leaving the REQUEST scope releases the DB."""
+
+    scope = Scope.REQUEST
+
+    spec = from_context(provides=WorkspaceSpec, scope=Scope.REQUEST)
+
+    @provide
+    def sql_uow(self, spec: WorkspaceSpec) -> Iterator[SqlUnitOfWork]:
+        # the ledger Engine is private to the UoW: the APP-level cache Engine owns that type key
+        uow = SqlUnitOfWork(make_ledger_engine(spec.db_path))
+        yield uow
+        uow.close()  # rolls back anything uncommitted, closes the session, disposes the engine
+
+    uow = alias(source=SqlUnitOfWork, provides=UnitOfWork)
+
+    @provide
+    def beliefs(self, uow: SqlUnitOfWork) -> BeliefRepository:
+        return SqlBeliefRepository(uow)
+
+    belief_source = alias(source=BeliefRepository, provides=BeliefSource)
+
+    @provide
+    def chunks(self, uow: SqlUnitOfWork) -> ChunkRepository:
+        return SqlChunkRepository(uow)
+
+    @provide
+    def audit_log(self, uow: SqlUnitOfWork) -> AuditLogRepository:
+        return SqlAuditLog(uow)
+
+    @provide
+    def events(self, log: AuditLogRepository) -> RevisionEventSink:
+        return RevisionAuditRecorder(log)
+
+    @provide
+    def replay(self, beliefs: BeliefSource, log: AuditLogRepository) -> ReplayService:
+        return ReplayService(beliefs=beliefs, log=log)
+
+    # LLM-backed by default; OfflineProvider overrides these three. Cheap objects around the
+    # APP-level models, so token usage stays shared across workspaces.
+    @provide
+    def embedder(self, model: EmbeddingModel, settings: Settings) -> Embedder:
+        return LLMEmbedder(model, model_name=settings.memdiff_embedding_model)
+
+    @provide
+    def extractor(
+        self, chat: ChatModel, prompts: PromptCatalog, settings: Settings, spec: WorkspaceSpec
+    ) -> BeliefExtractor:
+        return LLMBeliefExtractor(chat, prompts, model=settings.memdiff_chat_model, think=spec.think)
+
+    @provide
+    def reconciler(
+        self, chat: ChatModel, prompts: PromptCatalog, settings: Settings, spec: WorkspaceSpec
+    ) -> BeliefReconciler:
+        return LLMBeliefReconciler(
+            chat, prompts, model=settings.memdiff_chat_model, think=spec.think
+        )
+
+    @provide
+    def policy(
+        self,
+        spec: WorkspaceSpec,
+        beliefs: BeliefRepository,
+        chunks: ChunkRepository,
+        embedder: Embedder,
+        extractor: BeliefExtractor,
+        reconciler: BeliefReconciler,
+        events: RevisionEventSink,
+        uow: UnitOfWork,
+    ) -> MemoryPolicy:
+        match spec.policy_name:
+            case "naive_rag":
+                return NaiveRagPolicy(
+                    chunks=chunks, embedder=embedder, uow=uow, max_chunk_chars=spec.max_chunk_chars
+                )
+            case "recency_rag":
+                return RecencyRagPolicy(
+                    chunks=chunks,
+                    embedder=embedder,
+                    uow=uow,
+                    recency_decay=spec.recency_decay,
+                    max_chunk_chars=spec.max_chunk_chars,
+                )
+            case "structured_extract":
+                return StructuredExtractPolicy(
+                    beliefs=beliefs,
+                    chunks=chunks,
+                    embedder=embedder,
+                    extractor=extractor,
+                    events=events,
+                    uow=uow,
+                )
+            case "belief_revision":
+                return BeliefRevisionPolicy(
+                    beliefs=beliefs,
+                    chunks=chunks,
+                    embedder=embedder,
+                    extractor=extractor,
+                    reconciler=reconciler,
+                    events=events,
+                    uow=uow,
+                    candidate_top_k=spec.candidate_top_k,
+                )
+        raise ValueError(
+            f"Unknown policy '{spec.policy_name}'. Expected one of: "
+            "naive_rag, recency_rag, structured_extract, belief_revision."
+        )
+
+
+class _ContainerWorkspaceFactory:
+    """Opens a REQUEST scope per workspace; the container is hidden from runners."""
+
+    def __init__(self, container: Container) -> None:
+        self._container = container
+
+    @contextmanager
+    def open(self, spec: WorkspaceSpec) -> Iterator[MemoryWorkspace]:
+        with self._container(context={WorkspaceSpec: spec}) as request:
+            yield MemoryWorkspace(
+                policy=request.get(MemoryPolicy),
+                beliefs=request.get(BeliefRepository),
+                log=request.get(AuditLogRepository),
+                replay=request.get(ReplayService),
+            )
+
+
+class WorkspaceProvider(Provider):
+    scope = Scope.APP
+
+    @provide
+    def workspace_factory(self, container: Container) -> MemoryWorkspaceFactory:
+        return _ContainerWorkspaceFactory(container)
+
+
+class OfflineProvider(Provider):
+    """Rule-based embedder/extractor/reconciler for the offline demo (no LLM calls)."""
+
+    scope = Scope.REQUEST
+
+    @provide(override=True)
+    def embedder(self) -> Embedder:
+        return OfflineEmbedder()
+
+    @provide(override=True)
+    def extractor(self) -> BeliefExtractor:
+        return OfflineBeliefExtractor()
+
+    @provide(override=True)
+    def reconciler(self) -> BeliefReconciler:
+        return OfflineBeliefReconciler()
